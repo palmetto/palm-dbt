@@ -1,6 +1,5 @@
 import click
 import subprocess
-import webbrowser
 from pathlib import Path
 
 @click.command("cleanup")
