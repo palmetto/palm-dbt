@@ -99,13 +99,14 @@ def get_ref_file() -> str:
 
 
 def create_ref_files():
-    ref_file_templates = Path(__file__).parent.parent / 'model_template/ref_files'
+    ref_file_templates = Path(__file__).parent / 'model_template/ref_files'
     ref_file_dir = Path.cwd() / '.palm/model_template/ref_files'
     ref_file_dir.mkdir(parents=True, exist_ok=True)
     files = ['ref_file.sql', 'ref_file_readme.md']
     breakpoint
     for file in files:
         copy(ref_file_templates / file, ref_file_dir / file)
+    click.secho("Ref files created! Update the ref file and re-run the command to generate your model", fg="green")
 
 
 ## helper functions
