@@ -27,6 +27,7 @@ setup(
     url='',
     # Packages to include into the distribution
     packages=find_namespace_packages(include=['palm', 'palm.*']),
+    package_data={'': ['*.md', '*.sql']},
     include_package_data=True,
     # TODO: Make this work...
     # List of packages to install with this one

@@ -29,6 +29,11 @@ def new(ctx, name: str, model_type: str, use_ref_file: bool):
 
     if use_ref_file:
         ref_file = sql_to_dbt.get_ref_file()
+        # Check that ref file exists
+        if len(ref_file) == 0:
+            click.secho("Your project does not have a ref file", fg="red")
+            if click.confirm("Set up a ref file?"):
+                sql_to_dbt.create_ref_files()
         # Check that ref file has been updated
         if re.match('^[<].*[>]$', ref_file):
             click.secho("Ref file not updated, please add your source SQL and re-run the command", fg="red")
