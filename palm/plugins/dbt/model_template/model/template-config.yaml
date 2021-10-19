@@ -1,0 +1,5 @@
+directories:
+  - "{{model_name}}"
+files:
+  - base_model.sql: "{{model_name}}/{{model_name}}.sql"
+  - base_model.yml: "{{model_name}}/{{model_name}}.yml"
