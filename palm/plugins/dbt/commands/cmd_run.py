@@ -23,7 +23,7 @@ def cli(ctx,
         macros: Optional[tuple] = tuple()):
     """ Runs the DBT repo. """
 
-    dbt_palm_utils = ctx.obj.import_module('dbt_palm_utils', Path(Path.cwd(),'.palm','dbt_palm_utils.py'))
+    dbt_palm_utils = ctx.obj.import_module('dbt_palm_utils', Path(Path(__file__).parent, 'dbt_palm_utils.py'))
 
     cmd = dbt_palm_utils.shell_options("run", **locals())
     ctx.obj.run_in_shell(cmd)

@@ -19,7 +19,7 @@ def cli(ctx,
         select: Optional[tuple] = tuple() ):
     """ Tests the DBT repo """
 
-    dbt_palm_utils = ctx.obj.import_module('dbt_palm_utils', Path(Path.cwd(),'.palm','dbt_palm_utils.py'))
-
+    dbt_palm_utils = ctx.obj.import_module('dbt_palm_utils', Path(Path(__file__).parent, 'dbt_palm_utils.py'))
+    
     cmd = dbt_palm_utils.shell_options("test", **locals())
     ctx.obj.run_in_shell(cmd)

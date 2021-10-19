@@ -23,9 +23,9 @@ def new(ctx, name: str, model_type: str, use_ref_file: bool):
         return
 
     model_name = get_model_name(name, model_type)
-
-    sql_to_dbt = ctx.obj.import_module('sql_to_dbt', Path(Path.cwd(),'.palm','sql_to_dbt.py'))
-
+    
+    sql_to_dbt = ctx.obj.import_module('sql_to_dbt', Path(Path(__file__).parent, 'sql_to_dbt.py'))
+    
 
     if use_ref_file:
         ref_file = sql_to_dbt.get_ref_file()
@@ -43,7 +43,7 @@ def new(ctx, name: str, model_type: str, use_ref_file: bool):
 
 def create_model(model_name, model_type, ctx, use_ref_file):
 
-    sql_to_dbt = ctx.obj.import_module('sql_to_dbt', Path(Path.cwd(),'.palm','sql_to_dbt.py'))
+    sql_to_dbt = ctx.obj.import_module('sql_to_dbt', Path(Path(__file__).parent, 'sql_to_dbt.py'))
 
     model_template_path = Path('.palm', 'model_template', 'model')
     models_path = Path('models/arbor/', model_type)
@@ -67,7 +67,7 @@ def create_model(model_name, model_type, ctx, use_ref_file):
 
 def create_docs(model_name, model_type, ctx, use_ref_file):
 
-    sql_to_dbt = ctx.obj.import_module('sql_to_dbt', Path(Path.cwd(),'.palm','sql_to_dbt.py'))
+    sql_to_dbt = ctx.obj.import_module('sql_to_dbt', Path(Path(__file__).parent, 'sql_to_dbt.py'))
 
     docs_template_path = Path('.palm', 'model_template', 'docs')
     docs_path = Path('models/arbor/documentation/models/', model_type)
