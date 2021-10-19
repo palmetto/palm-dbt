@@ -34,6 +34,7 @@ def new(ctx, name: str, model_type: str, use_ref_file: bool):
             click.secho("Your project does not have a ref file", fg="red")
             if click.confirm("Set up a ref file?"):
                 sql_to_dbt.create_ref_files()
+            return
         # Check that ref file has been updated
         if re.match('^[<].*[>]$', ref_file):
             click.secho("Ref file not updated, please add your source SQL and re-run the command", fg="red")
@@ -50,7 +51,7 @@ def create_model(model_name, model_type, ctx, use_ref_file):
 
     sql_to_dbt = ctx.obj.import_module('sql_to_dbt', Path(Path(__file__).parent, 'sql_to_dbt.py'))
 
-    model_template_path = Path('.palm', 'model_template', 'model')
+    model_template_path = Path(Path(__file__).parent, 'model_template', 'model')
     models_path = Path('models/arbor/', model_type)
 
     replacements = {
@@ -74,7 +75,7 @@ def create_docs(model_name, model_type, ctx, use_ref_file):
 
     sql_to_dbt = ctx.obj.import_module('sql_to_dbt', Path(Path(__file__).parent, 'sql_to_dbt.py'))
 
-    docs_template_path = Path('.palm', 'model_template', 'docs')
+    docs_template_path = Path(Path(__file__).parent, 'model_template', 'docs')
     docs_path = Path('models/arbor/documentation/models/', model_type)
 
     replacements = {
