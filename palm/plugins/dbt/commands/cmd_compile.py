@@ -1,5 +1,7 @@
 import click
 from typing import Optional
+from palm.plugins.dbt.dbt_palm_utils import dbt_env_vars
+
 
 @click.command("compile")
 @click.option("--models", multiple=True, help="see dbt docs on models flag")
@@ -8,14 +10,14 @@ from typing import Optional
 def cli(ctx,
         fast: bool,
         models: Optional[tuple] = tuple()):
-
     """Cleans up target directory and dependencies, then compiles dbt"""
 
-    def add_models(command:str)->str:
-        if models:
-            command += " --models " + " ".join(models)
-        return command
     if fast:
-      ctx.obj.run_in_shell(add_models("dbt compile"))
+      cmd = "dbt compile"
     else:
-      ctx.obj.run_in_shell(add_models("dbt clean && dbt deps && dbt compile"))
+      cmd = "dbt clean && dbt deps && dbt compile"
+    if models:
+      cmd += f" --models {models}"
+
+    env_vars = dbt_env_vars(ctx.obj.palm.branch)
+    ctx.obj.run_in_shell(cmd, env_vars)

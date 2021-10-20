@@ -1,6 +1,8 @@
 import click
 import re
 from pathlib import Path
+from palm.plugins.dbt.dbt_palm_utils import dbt_env_vars
+
 
 valid_model_types = ['tmp', 'staging', 'intermediate', 'dim', 'fact']
 
@@ -42,9 +44,11 @@ def new(ctx, name: str, model_type: str, use_ref_file: bool):
 
     create_model(model_name, model_type, ctx, use_ref_file)
     create_docs(model_name, model_type, ctx, use_ref_file)
+    
+    env_vars = dbt_env_vars(ctx.obj.palm.branch)
 
     if use_ref_file:
-        ctx.obj.run_in_shell(f"dbt run --models @{model_name} --fail-fast")
+        ctx.obj.run_in_shell(f"dbt run --models @{model_name} --fail-fast", env_vars)
 
 
 def create_model(model_name, model_type, ctx, use_ref_file):

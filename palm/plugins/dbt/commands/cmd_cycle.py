@@ -1,5 +1,9 @@
 import click
 from typing import Optional
+from palm.plugins.dbt.dbt_palm_utils import dbt_env_vars
+
+# TODO: Refactor this command to reduce branching logic and simply join a list of
+# commands once, before running. Also use f-strings instead of concat
 
 @click.command("cycle")
 @click.argument("count", type=int, default=2)
@@ -58,4 +62,5 @@ def cli(ctx,
                         add_persist()]
         return " && ".join(list(filter(None, commands)))
 
-    ctx.obj.run_in_shell(make_cmd())
+    env_vars = dbt_env_vars(ctx.obj.palm.branch)
+    ctx.obj.run_in_shell(make_cmd(), env_vars)

@@ -1,14 +1,17 @@
 import click
 import subprocess
 from pathlib import Path
+from palm.plugins.dbt.dbt_palm_utils import dbt_env_vars
 
 @click.command("cleanup")
 @click.pass_context
 def cli(ctx):
-    """removes any artifacts from Snowflake
-        related to the current branch.
-    """
-    ctx.obj.run_in_shell("dbt clean && dbt deps && dbt run-operation drop_branch_schemas")
+    """ Removes any artifacts from Snowflake related to the current branch. """
+
+    cmd = "dbt clean && dbt deps && dbt run-operation drop_branch_schemas"
+    env_vars = dbt_env_vars(ctx.obj.palm.branch)
+    ctx.obj.run_in_shell(cmd, env_vars)
+
     click.echo("Remote cleanup complete! Cleaning your local docker env...")
     subprocess.run("docker-compose down",
                    check=True,
