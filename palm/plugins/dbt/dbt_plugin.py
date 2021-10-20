@@ -1,5 +1,7 @@
 from pathlib import Path
-from palm import Plugin
+from palm.plugins.base import BasePlugin
 
-def load():
-    Plugin.factory('dbt', Path(__file__))
+DbtPlugin = BasePlugin(
+    name = 'dbt', 
+    path = Path(__file__),
+)

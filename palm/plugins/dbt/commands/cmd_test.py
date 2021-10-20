@@ -1,6 +1,6 @@
 import click
 from typing import Optional
-from pathlib import Path
+from palm.plugins.dbt.dbt_palm_utils import shell_options, dbt_env_vars
 
 @click.command('test')
 @click.option("--fast", is_flag=True, help="will skip clean/deps/seed")
@@ -19,7 +19,7 @@ def cli(ctx,
         select: Optional[tuple] = tuple() ):
     """ Tests the DBT repo """
 
-    dbt_palm_utils = ctx.obj.import_module('dbt_palm_utils', Path(Path(__file__).parent, 'dbt_palm_utils.py'))
     
-    cmd = dbt_palm_utils.shell_options("test", **locals())
-    ctx.obj.run_in_shell(cmd)
+    cmd = shell_options("test", **locals())
+    env_vars = dbt_env_vars(ctx.obj.palm.branch)
+    ctx.obj.run_in_shell(cmd, env_vars)

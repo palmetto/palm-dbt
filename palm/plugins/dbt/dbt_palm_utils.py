@@ -1,3 +1,4 @@
+import re
 from typing import Optional
 
 """ Shared DBT utilities to build out common CLI options """
@@ -5,7 +6,6 @@ from typing import Optional
 def shell_options(command_name: str, **kwargs):
     # pop off unused kwargs caused by use of importlib in palm
     kwargs.pop("ctx")
-    kwargs.pop("dbt_palm_utils")
 
     if kwargs["fast"]:
         for k in ("fast", "select"):
@@ -68,3 +68,14 @@ def _long_cycle(cmd: str,
             command += " && dbt run-operation drop_branch_schemas"
 
     return command
+
+def dbt_env_vars(branch: str) -> dict:
+    return {
+        'PDP_DEV_SCHEMA': _generate_schema_from_branch(branch),
+        'PDP_ENV': 'DEVELOPMENT'
+    }
+
+
+def _generate_schema_from_branch(branch: str) -> str:
+    """ Formats the branch name as a schema."""
+    return re.sub(r"[^0-9a-zA-Z]+", "_", branch).strip("_").lower()
