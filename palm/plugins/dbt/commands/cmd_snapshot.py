@@ -13,7 +13,7 @@ def cli(ctx,
     
     command = "dbt snapshot"
     if select:
-        command += " --select " + " ".join(select) 
+        command += f" --select {select}"
     if not persist:
         command += " && dbt run-operation drop_branch_schemas" 
 
