@@ -72,12 +72,12 @@ def sql_to_md() -> str:
     Returns:
         str: Content for model docs yml
     """
-    results = get_ref_file()
+    filedata = get_ref_file()
 
-    model_notes_present = len(re.findall('\/\*\D([\D]*)\*\/([\D\d]*)', results, flags=re.MULTILINE)) > 0
+    model_notes_present = len(re.findall('\/\*\D([\D]*)\*\/([\D\d]*)', filedata, flags=re.MULTILINE)) > 0
 
     if model_notes_present:
-        results = re.sub('\/\*\D([\D]*)\*\/([\D\d]*)', r'\1', results, flags=re.MULTILINE)
+        results = re.sub('\/\*\D([\D]*)\*\/([\D\d]*)', r'\1', filedata, flags=re.MULTILINE)
         results = re.sub('(?!\A)^', ' '*4, results, flags=re.MULTILINE)
         return results
 

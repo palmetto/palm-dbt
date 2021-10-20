@@ -2,6 +2,7 @@ import click
 import re
 from pathlib import Path
 from palm.plugins.dbt.dbt_palm_utils import dbt_env_vars
+import palm.plugins.dbt.sql_to_dbt as sql_to_dbt
 
 
 valid_model_types = ['tmp', 'staging', 'intermediate', 'dim', 'fact']
@@ -25,9 +26,6 @@ def new(ctx, name: str, model_type: str, use_ref_file: bool):
         return
 
     model_name = get_model_name(name, model_type)
-    
-    sql_to_dbt = ctx.obj.import_module('sql_to_dbt', Path(Path(__file__).parent, 'sql_to_dbt.py'))
-    
 
     if use_ref_file:
         ref_file = sql_to_dbt.get_ref_file()
@@ -45,17 +43,14 @@ def new(ctx, name: str, model_type: str, use_ref_file: bool):
     create_model(model_name, model_type, ctx, use_ref_file)
     create_docs(model_name, model_type, ctx, use_ref_file)
     
-    env_vars = dbt_env_vars(ctx.obj.palm.branch)
 
-    if use_ref_file:
-        ctx.obj.run_in_shell(f"dbt run --models @{model_name} --fail-fast", env_vars)
+    # if use_ref_file:
+    #     env_vars = dbt_env_vars(ctx.obj.palm.branch)
+    #     ctx.obj.run_in_shell(f"dbt run --models @{model_name} --fail-fast", env_vars)
 
 
 def create_model(model_name, model_type, ctx, use_ref_file):
-
-    sql_to_dbt = ctx.obj.import_module('sql_to_dbt', Path(Path(__file__).parent, 'sql_to_dbt.py'))
-
-    model_template_path = Path(Path(__file__).parent, 'model_template', 'model')
+    model_template_path = Path(Path(__file__).parent.parent, 'model_template', 'model')
     models_path = Path('models/arbor/', model_type)
 
     replacements = {
@@ -76,10 +71,7 @@ def create_model(model_name, model_type, ctx, use_ref_file):
 
 
 def create_docs(model_name, model_type, ctx, use_ref_file):
-
-    sql_to_dbt = ctx.obj.import_module('sql_to_dbt', Path(Path(__file__).parent, 'sql_to_dbt.py'))
-
-    docs_template_path = Path(Path(__file__).parent, 'model_template', 'docs')
+    docs_template_path = Path(Path(__file__).parent.parent, 'model_template', 'docs')
     docs_path = Path('models/arbor/documentation/models/', model_type)
 
     replacements = {
