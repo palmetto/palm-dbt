@@ -3,5 +3,5 @@ from palm.plugins.base import BasePlugin
 
 DbtPlugin = BasePlugin(
     name = 'dbt', 
-    path = Path(__file__),
+    command_dir = Path(__file__) / 'commands',
 )
