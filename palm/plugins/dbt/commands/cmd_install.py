@@ -13,7 +13,7 @@ def cli(ctx):
     within any dbt project.
 
     generate_branch_schemas - creates a schema name for the current git branch. This
-    macro _requires_ the PDP_ENV environment variable be set to DEVELOPMENT | CI | PROD
+    macro _requires_ the PALM_DBT_ENV environment variable be set to DEVELOPMENT | CI | PROD
 
     drop_branch_schemas - Used to clean up after each run, unless the --persist 
     flag is provided. Only runs against a TEST database. Drops schemas matching
