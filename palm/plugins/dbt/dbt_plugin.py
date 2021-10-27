@@ -1,5 +1,17 @@
 from pathlib import Path
-from palm import Plugin
+from palm.plugins.base import BasePlugin
+import pkg_resources
 
-def load():
-    Plugin.factory('dbt', Path(__file__))
+def get_version():
+    try:
+        version = pkg_resources.require("palm-dbt")[0].version
+    except pkg_resources.DistributionNotFound:
+        version = 'unknown'
+    return version
+
+
+DbtPlugin = BasePlugin(
+    name = 'dbt', 
+    command_dir = Path(__file__).parent / 'commands',
+    version = get_version()
+)
