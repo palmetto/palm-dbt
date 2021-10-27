@@ -13,5 +13,6 @@ def get_version():
 DbtPlugin = BasePlugin(
     name = 'dbt', 
     command_dir = Path(__file__).parent / 'commands',
-    version = get_version()
+    version = get_version(),
+    package_location='https://github.com/palmetto/palm-dbt.git'
 )
