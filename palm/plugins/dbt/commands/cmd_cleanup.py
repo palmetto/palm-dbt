@@ -10,7 +10,7 @@ def cli(ctx):
 
     cmd = "dbt clean && dbt deps && dbt run-operation drop_branch_schemas"
     env_vars = dbt_env_vars(ctx.obj.palm.branch)
-    ctx.obj.run_in_shell(cmd, env_vars)
+    ctx.obj.run_in_docker(cmd, env_vars)
 
     click.echo("Remote cleanup complete! Cleaning your local docker env...")
     subprocess.run("docker-compose down",
