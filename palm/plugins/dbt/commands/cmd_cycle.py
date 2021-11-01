@@ -63,4 +63,4 @@ def cli(ctx,
         return " && ".join(list(filter(None, commands)))
 
     env_vars = dbt_env_vars(ctx.obj.palm.branch)
-    ctx.obj.run_in_shell(make_cmd(), env_vars)
+    ctx.obj.run_in_docker(make_cmd(), env_vars)

@@ -25,4 +25,4 @@ def cli(ctx,
 
     cmd = shell_options("run", **locals())
     env_vars = dbt_env_vars(ctx.obj.palm.branch)
-    ctx.obj.run_in_shell(cmd, env_vars)
+    ctx.obj.run_in_docker(cmd, env_vars)

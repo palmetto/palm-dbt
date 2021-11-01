@@ -18,5 +18,5 @@ def cli(ctx,
         command += " && dbt run-operation drop_branch_schemas" 
 
     env_vars = dbt_env_vars(ctx.obj.palm.branch)
-    ctx.obj.run_in_shell(command, env_vars)
+    ctx.obj.run_in_docker(command, env_vars)
 
