@@ -27,7 +27,7 @@ def _short_cycle(cmd: str,
     command = "" if no_seed else f" dbt seed --full-refresh && "
 
     if macros:
-        command += f"dbt run-operation {macros} drop_branch_schemas"
+        command += f"dbt run-operation {macros}"
     else:
         command += f"dbt {cmd}"
         if models:
@@ -36,8 +36,9 @@ def _short_cycle(cmd: str,
             command += " --full-refresh"
         if not no_fail_fast:
             command += " --fail-fast"
-        if not persist:
-            command += " && dbt run-operation drop_branch_schemas"
+
+    if not persist:
+        command += " && dbt run-operation drop_branch_schemas"
 
     return command
 
@@ -49,23 +50,24 @@ def _long_cycle(cmd: str,
                 select: Optional[tuple] = (),
                 models: Optional[tuple] = (),
                 macros: Optional[tuple] = ()) -> str:
-    seed_cmd = "" if no_seed else " && dbt seed --full-refresh"
-    command = f"dbt clean && dbt deps" + seed_cmd
+    seed_cmd = "" if no_seed else "&& dbt seed --full-refresh"
+    command = f"dbt clean && dbt deps {seed_cmd}" 
 
     if macros:
-        command += f" && dbt run-operation {macros} drop_branch_schemas"
+        command += f" && dbt run-operation {macros}"
     else:
+        command += f" && dbt {cmd}"
         if select and not no_seed:
             command += " --select " + " ".join(select)
-        command += f" && dbt {cmd}"
         if models:
             command += " --models " + " ".join(models)
         if full_refresh:
             command += " --full-refresh"
         if not no_fail_fast:
             command += " --fail-fast"
-        if not persist:
-            command += " && dbt run-operation drop_branch_schemas"
+
+    if not persist:
+        command += " && dbt run-operation drop_branch_schemas"
 
     return command
 
