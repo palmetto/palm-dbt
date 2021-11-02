@@ -83,4 +83,4 @@ def dbt_env_vars(branch: str) -> dict:
 def _generate_schema_from_branch(branch: str) -> str:
     """ Formats the branch name as a schema."""
     user = local_user_lookup()
-    return re.sub(r"[^0-9a-zA-Z]+", "_", f"{branch}_{user}").strip("_").lower()
+    return re.sub(r"[^0-9a-zA-Z]+", "_", f"{user}_{branch}").strip("_").lower()
