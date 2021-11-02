@@ -1,6 +1,6 @@
 import re
 from typing import Optional
-import os
+from palm.plugins.dbt.local_user_lookup import local_user_lookup
 
 """ Shared DBT utilities to build out common CLI options """
 
@@ -82,11 +82,5 @@ def dbt_env_vars(branch: str) -> dict:
 
 def _generate_schema_from_branch(branch: str) -> str:
     """ Formats the branch name as a schema."""
-    user = "no_user"
-    for name in ('LOGNAME', 'USER', 'LNAME', 'USERNAME'):
-        user_found = os.environ.get(name)
-        if user_found:
-          user = user_found
-          break
-    
+    user = local_user_lookup()
     return re.sub(r"[^0-9a-zA-Z]+", "_", f"{branch}_{user}").strip("_").lower()
