@@ -63,4 +63,6 @@ def cli(ctx,
         return " && ".join(list(filter(None, commands)))
 
     env_vars = dbt_env_vars(ctx.obj.palm.branch)
-    ctx.obj.run_in_docker(make_cmd(), env_vars)
+    cmd = make_cmd()
+    success, msg = ctx.obj.run_in_docker(cmd, env_vars)
+    click.secho(msg, fg="green" if success else "red")
