@@ -20,5 +20,3 @@ def cli(ctx,
     env_vars = dbt_env_vars(ctx.obj.palm.branch)
     success, msg = ctx.obj.run_in_docker(cmd, env_vars)
     click.secho(msg, fg="green" if success else "red")
-
-
