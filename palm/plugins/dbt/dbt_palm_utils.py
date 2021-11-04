@@ -55,7 +55,8 @@ def _long_cycle(cmd: str,
     command = f"dbt clean && dbt deps {seed_cmd}" 
 
     if macros:
-        command += f" && dbt run-operation {macros}"
+        run_operation = " && dbt run-operation "
+        command += run_operation + run_operation.join(macros)
     else:
         command += f" && dbt {cmd}"
         if select and not no_seed:
