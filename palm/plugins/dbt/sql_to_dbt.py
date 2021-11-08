@@ -2,7 +2,7 @@ import re
 import click
 from shutil import copy
 from pathlib import Path
-from functools import cache
+from functools import lru_cache
 
 
 def create_dbt_sql_file(model_name: str, model_type: str) -> None:
@@ -83,8 +83,7 @@ def sql_to_md() -> str:
 
     return "## Business Notes\n\n\t## Developer Notes"
 
-
-@cache
+@lru_cache(maxsize=1)
 def get_ref_file() -> str:
     """Read the ref file, cached to reduce amount of times we need to read the file into memory
 
