@@ -4,8 +4,9 @@
 Before submitting your PR, please review the following checklist:
 
 - [ ] Consider adding a unit test if your PR resolves an issue.
-- [ ] All new and existing tests pass locally (`palm test`)
-- [ ] Lint (`palm lint`) has passed locally and any fixes were made for failures
+<!-- TODO: Implement palm test and palm lint for this plugin -->
+<!-- - [ ] All new and existing tests pass locally (`palm test`) -->
+<!-- - [ ] Lint (`palm lint`) has passed locally and any fixes were made for failures -->
 - [ ] Docs have been reviewed and added / updated if needed (for bug fixes / features)
 
 ### Breaking changes
