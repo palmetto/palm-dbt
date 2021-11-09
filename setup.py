@@ -22,17 +22,18 @@ setup(
     description='dbt extension for Palm CLI',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    author='Jake Beresford',
-    author_email='jake.bereford@palmetto.com',
+    author='Palmetto - Data & Analytics team',
+    author_email='data-analytics-team@palmetto.com',
     url='',
-    # Packages to include into the distribution
     packages=find_namespace_packages(include=['palm', 'palm.*']),
     package_data={'': ['*.md', '*.sql', '*.yaml', '*.yml']},
     include_package_data=True,
-    # TODO: Make this work...
-    # List of packages to install with this one
     install_requires=[
 		'palm>=2.0.0'
-	],
-    license='',
+	],    
+    license='Apache License 2.0',
+    classifiers=[
+        'Development Status :: 4 - Beta',
+        'License :: OSI Approved :: Apache Software License',
+    ],
 )
