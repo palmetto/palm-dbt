@@ -1,4 +1,4 @@
-# Code of Conduct - Palm CLI
+# Code of Conduct - Palm dbt
 
 ## Our Pledge
 
