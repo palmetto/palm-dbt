@@ -18,18 +18,17 @@ long_description = Path(this_directory, 'README.md').read_text()
 
 setup(
     name='palm-dbt',
-    version='0.0.1',
+    version='0.0.2',
     description='dbt extension for Palm CLI',
     long_description=long_description,
     long_description_content_type='text/markdown',
     author='Palmetto - Data & Analytics team',
     author_email='data-analytics-team@palmetto.com',
-    url='',
+    url='https://github.com/palmetto/palm-dbt',
     packages=find_namespace_packages(include=['palm', 'palm.*']),
     package_data={'': ['*.md', '*.sql', '*.yaml', '*.yml']},
-    include_package_data=True,
     install_requires=[
-		'palm>=2.0.0'
+		'palmcli>=2.0.0'
 	],    
     license='Apache License 2.0',
     classifiers=[
