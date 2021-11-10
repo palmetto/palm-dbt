@@ -1,6 +1,6 @@
 # Palm dbt
 
-dbt plugin for Palm CLI
+dbt plugin for [Palm CLI](https://github.com/palmetto/palm-cli)
 
 This plugin adds dbt-specific commands for use with Palm CLI
 
