@@ -17,7 +17,7 @@ Or from source
 ### Configuring your project
 
 To configure your project to use the palm-dbt plugin, you will need a `.palm/config.yaml`
-this can be created by running `palm scaffold init`, once you have your config file,
+this can be created by running `palm init`, once you have your config file,
 add the dbt-palm plugin with the following configuration:
 
 ```yaml
