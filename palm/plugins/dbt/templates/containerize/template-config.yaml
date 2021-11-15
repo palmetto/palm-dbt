@@ -1,0 +1,3 @@
+files:
+  - Dockerfile.txt: "Dockerfile"
+  - docker-compose.yaml: "docker-compose.yaml"

@@ -1,0 +1,8 @@
+FROM fishtownanalytics/dbt:{{dbt_version}}
+COPY . /app
+WORKDIR /app
+ENV PYTHONPATH=${PYTHONPATH}:${PWD}
+RUN pip3 install {{package_manager}}
+
+# This was an intentional override of the DBT labs official docker image, which has an entry point of "dbt" and broke our CI pipelines
+ENTRYPOINT [ "" ]
