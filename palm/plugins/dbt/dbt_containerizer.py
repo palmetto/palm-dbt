@@ -7,7 +7,7 @@ from pathlib import Path
 import yaml
 from palm.plugins.base import BasePlugin
 import pkg_resources
-from dbt_version_checker import DbtVersionChecker
+
 
 class DbtContainerizer(PythonContainerizer):
     """
@@ -25,12 +25,12 @@ class DbtContainerizer(PythonContainerizer):
         """
         Run the dbt containerizer.
         """
-        if not self.validate_python_version():
+        if not super().validate_python_version():
             click.secho(f"Invalid python version: {self.python_version}", fg="red")
             return
 
         try:
-            self.validate_python_version()
+            super().validate_python_version()
             super().check_setup()
             self.validate_dbt_version()
         except AbortPalm as e:
@@ -47,18 +47,6 @@ class DbtContainerizer(PythonContainerizer):
                 return
             package_manager = "pip3"
 
-        
-
-        if DbtVersionChecker().is_supported_dbt_version():
-            DbtPlugin = BasePlugin(
-                name = 'dbt', 
-                command_dir = Path(__file__).parent / 'commands',
-                version = get_version(),
-                package_location='https://github.com/palmetto/palm-dbt.git'
-            )
-        else:
-            raise Exception('dbt plugin requires dbt version >= 0.19.0')
-
 
         target_dir = Path.cwd()
         replacements = {
@@ -68,11 +56,4 @@ class DbtContainerizer(PythonContainerizer):
             "dbt_version": self.get_dbt_version()
         }
 
-        super().generate(target_dir, replacements) 
-
-    def get_version():
-            try:
-                version = pkg_resources.require("palm-dbt")[0].version
-            except pkg_resources.DistributionNotFound:
-                version = 'unknown'
-            return version
+        super().generate(target_dir, replacements)
