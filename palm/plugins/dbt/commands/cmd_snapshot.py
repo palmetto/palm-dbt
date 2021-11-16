@@ -14,11 +14,11 @@ def cli(ctx,
     """ Executes the DBT snapshots."""
 
     if fast:
-      cmd = "dbt snapshot"
+        cmd = "dbt snapshot"
     else:
-      cmd = "dbt clean && dbt deps && dbt snapshot"
+        cmd = "dbt clean && dbt deps && dbt snapshot"
     if select:
-      cmd += f" --select {select}"
+        cmd += f" --select {select}"
     if not persist:
         cmd += " && dbt run-operation drop_branch_schemas" 
 
