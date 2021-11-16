@@ -1,6 +1,6 @@
 import click
 from typing import Optional
-from palm.plugins.dbt.dbt_palm_utils import shell_options, dbt_env_vars
+from palm.plugins.dbt.dbt_palm_utils import dbt_env_vars
 
 @click.command("snapshot")
 @click.option("--persist", is_flag=True, help="will not drop the test schema at the end")
