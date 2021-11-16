@@ -1,7 +1,6 @@
 from pathlib import Path
 from palm.plugins.base import BasePlugin
 import pkg_resources
-from dbt_version_checker import DbtVersionChecker
 
 def get_version():
     try:
