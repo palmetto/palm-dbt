@@ -1,6 +1,7 @@
 from pathlib import Path
 from palm.plugins.base import BasePlugin
 import pkg_resources
+from dbt_version_checker import DbtVersionChecker
 
 def get_version():
     try:
@@ -10,9 +11,12 @@ def get_version():
     return version
 
 
-DbtPlugin = BasePlugin(
-    name = 'dbt', 
-    command_dir = Path(__file__).parent / 'commands',
-    version = get_version(),
-    package_location='https://github.com/palmetto/palm-dbt.git'
-)
+if DbtVersionChecker().is_supported_dbt_version():
+    DbtPlugin = BasePlugin(
+        name = 'dbt', 
+        command_dir = Path(__file__).parent / 'commands',
+        version = get_version(),
+        package_location='https://github.com/palmetto/palm-dbt.git'
+    )
+else:
+    raise Exception('dbt plugin requires dbt version >= 0.19.0')
