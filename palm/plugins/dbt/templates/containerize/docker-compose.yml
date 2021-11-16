@@ -11,5 +11,6 @@ services:
       - .env
     environment:
       - DBT_PROFILES_DIR=/app
+    # TODO: fix hardcoded port
     ports: 
       - "8080:8080"
