@@ -11,12 +11,9 @@ def get_version():
     return version
 
 
-if DbtVersionChecker().is_supported_dbt_version():
-    DbtPlugin = BasePlugin(
-        name = 'dbt', 
-        command_dir = Path(__file__).parent / 'commands',
-        version = get_version(),
-        package_location='https://github.com/palmetto/palm-dbt.git'
-    )
-else:
-    raise Exception('dbt plugin requires dbt version >= 0.19.0')
+DbtPlugin = BasePlugin(
+    name = 'dbt', 
+    command_dir = Path(__file__).parent / 'commands',
+    version = get_version(),
+    package_location='https://github.com/palmetto/palm-dbt.git'
+)
