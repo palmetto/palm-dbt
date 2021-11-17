@@ -11,13 +11,13 @@ class MockContext:
 
 DbtContainerizer.__abstractmethods__ = set()
 
-def test_run(tmp_path, environment):
+def test_run(tmp_path):
     templates_dir = (Path(__file__).parents[2] / 'palm/plugins/dbt/templates/containerize')
     ctx = None
     os.chdir(tmp_path)
     Path('.env').touch()
     Path('requirements.txt').touch()
-    plugin_manager_instance = Environment().mock_plugin_manager
+    plugin_manager_instance = Environment().plugin_manager
     palm_config = PalmConfig(plugin_manager_instance)
     ctx.obj = Environment(plugin_manager_instance, palm_config)
     c = DbtContainerizer(ctx, templates_dir)
