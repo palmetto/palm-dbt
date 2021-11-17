@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import Optional
-from palm.plugins.containerizer import PythonContainerizer
+from palm.containerizer import PythonContainerizer
 import sys
 from palm.palm_exceptions import AbortPalm
 import click
