@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from palm.containerizer import DbtContainerizer
+from palm.plugins.dbt.dbt_containerizer import DbtContainerizer
 
 class MockContext:
     def __init__(self, **kwargs):
@@ -21,12 +21,10 @@ def test_run(tmp_path, environment):
     assert Path(tmp_path, 'Dockerfile').exists()
     assert Path(tmp_path, 'requirements.txt').exists()
     assert Path(tmp_path, 'scripts', 'entrypoint.sh').exists()
+    assert Path(tmp_path, 'profiles.yml').exists()
 
 def test_validate_dbt_version(tmp_path, environment):
     ctx = MockContext(obj=environment)
     default_dbt_version = DbtContainerizer(ctx, tmp_path)
     assert default_dbt_version.validate_dbt_version()
-
-    valid_dbt_version = DbtContainerizer(ctx, tmp_path, dbt_version='0.19.0')
-    assert valid_dbt_version.validate_dbt_version()
 

@@ -26,7 +26,7 @@ setup(
     author_email='data-analytics-team@palmetto.com',
     url='https://github.com/palmetto/palm-dbt',
     packages=find_namespace_packages(include=['palm', 'palm.*']),
-    package_data={'': ['*.md', '*.sql', '*.yaml', '*.yml', '*.txt']},
+    package_data={'': ['palm/plugins/dbt/**/*']},
     install_requires=[
 		'palm>=2.0.0'
 	],    
