@@ -1,6 +1,9 @@
 import os
+import pytest
 from pathlib import Path
 from palm.plugins.dbt.dbt_containerizer import DbtContainerizer
+from palm.environment import Environment
+from palm.palm_config import PalmConfig
 
 class MockContext:
     def __init__(self, **kwargs):
@@ -9,22 +12,20 @@ class MockContext:
 DbtContainerizer.__abstractmethods__ = set()
 
 def test_run(tmp_path, environment):
-    templates_dir = (Path(__file__).parents[2] / 'palm/plugins/core/templates/containerize')
-
+    templates_dir = (Path(__file__).parents[2] / 'palm/plugins/dbt/templates/containerize')
+    ctx = None
     os.chdir(tmp_path)
     Path('.env').touch()
     Path('requirements.txt').touch()
-    ctx = MockContext(obj=environment)
+    plugin_manager_instance = Environment().mock_plugin_manager
+    palm_config = PalmConfig(plugin_manager_instance)
+    ctx.obj = Environment(plugin_manager_instance, palm_config)
     c = DbtContainerizer(ctx, templates_dir)
     c.run()
-
+    
+    assert ctx.obj == Environment()
     assert Path(tmp_path, 'Dockerfile').exists()
     assert Path(tmp_path, 'requirements.txt').exists()
     assert Path(tmp_path, 'scripts', 'entrypoint.sh').exists()
     assert Path(tmp_path, 'profiles.yml').exists()
-
-def test_validate_dbt_version(tmp_path, environment):
-    ctx = MockContext(obj=environment)
-    default_dbt_version = DbtContainerizer(ctx, tmp_path)
-    assert default_dbt_version.validate_dbt_version()
 
