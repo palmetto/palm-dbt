@@ -25,6 +25,8 @@ plugins:
   - dbt
 ```
 
+If you optionally accept the prompt to add the profiles.yml file, do be sure to fill it in properly as well. Your dbt project will not run without it!
+
 ### Adding palm dbt macros
 
 palm-dbt uses the git branch name to set the schema for all commands via env vars.
