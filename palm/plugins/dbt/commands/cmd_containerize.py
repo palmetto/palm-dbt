@@ -1,14 +1,14 @@
 import click
 from pathlib import Path
-from palm.containerizer import DbtContainerizer
+from palm.plugins.dbt.dbt_containerizer import DbtContainerizer
 
 
 @click.command("containerize")
 @click.option(
     "--version",
     multiple=False,
-    default="3.8",
-    help="Python version to use (default 3.8)",
+    default="0.21.0",
+    help="dbt version to use (default 0.21.0)",
 )
 @click.pass_context
 def cli(ctx, version: str):
