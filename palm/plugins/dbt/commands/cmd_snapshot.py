@@ -10,7 +10,7 @@ from palm.plugins.dbt.dbt_palm_utils import dbt_env_vars
 def cli(ctx, 
         persist: bool,
         fast: bool,
-        select: Optional[tuple]=()):
+        select: Optional[tuple] = tuple()):
     """ Executes the DBT snapshots."""
 
     if fast:
