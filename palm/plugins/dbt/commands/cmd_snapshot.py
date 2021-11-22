@@ -10,7 +10,7 @@ from palm.plugins.dbt.dbt_palm_utils import dbt_env_vars
 def cli(ctx, 
         persist: bool,
         fast: bool,
-        select: Optional[tuple]=()):
+        select: Optional[tuple] = tuple()):
     """ Executes the DBT snapshots."""
 
     if fast:
@@ -18,7 +18,7 @@ def cli(ctx,
     else:
         cmd = "dbt clean && dbt deps && dbt snapshot"
     if select:
-        cmd += f" --select {select}"
+        cmd += f" --select " + " ".join(select)
     if not persist:
         cmd += " && dbt run-operation drop_branch_schemas" 
 
