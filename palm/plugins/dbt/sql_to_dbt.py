@@ -5,7 +5,7 @@ from pathlib import Path
 from functools import lru_cache
 
 
-def create_dbt_sql_file(model_name: str, model_type: str) -> None:
+def create_dbt_sql_file(model_name: str, models_path: Path) -> None:
     """Writes dbt-style code to the model.sql based on SQL provided in the reference file
 
     Args:
@@ -15,7 +15,7 @@ def create_dbt_sql_file(model_name: str, model_type: str) -> None:
 
     replacements = get_replacements()
 
-    output_file = Path.cwd() / 'models' / 'arbor' / model_type / model_name / f'{model_name}.sql'
+    output_file = models_path / model_name / f'{model_name}.sql'
 
     filedata = get_ref_file()
 
