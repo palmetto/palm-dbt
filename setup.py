@@ -28,7 +28,7 @@ setup(
     packages=find_namespace_packages(include=['palm', 'palm.*']),
     package_data={'': ['*.md', '*.sql', '*.yaml', '*.yml']},
     install_requires=[
-		'palmcli>=2.0.0'
+		'palm>=2.0.0'
 	],    
     license='Apache License 2.0',
     classifiers=[
