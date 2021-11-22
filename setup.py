@@ -18,7 +18,7 @@ long_description = Path(this_directory, 'README.md').read_text()
 
 setup(
     name='palm-dbt',
-    version='0.0.3',
+    version='0.0.4',
     description='dbt extension for Palm CLI',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -28,7 +28,7 @@ setup(
     packages=find_namespace_packages(include=['palm', 'palm.*']),
     package_data={'': ['*.md', '*.sql', '*.yaml', '*.yml']},
     install_requires=[
-		'palmcli>=2.0.0'
+		'palm>=2.0.0'
 	],    
     license='Apache License 2.0',
     classifiers=[
