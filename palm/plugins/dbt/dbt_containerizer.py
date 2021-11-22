@@ -6,17 +6,21 @@ from palm.palm_exceptions import AbortPalm
 import click
 import yaml
 
+
 class DbtContainerizer(PythonContainerizer):
     """
     Containerizer for dbt projects.
     """
-    def __init__(self, ctx, template_dir: Path, dbt_version: Optional[str] = '0.21.0') -> None:
+
+    def __init__(
+        self, ctx, template_dir: Path, dbt_version: Optional[str] = '0.21.0'
+    ) -> None:
         self.ctx = ctx
         self.project_name = ctx.obj.palm.image_name
         self.template_dir = template_dir
         self.dbt_version = dbt_version
         self.package_manager = ''
-    
+
     def run(self) -> None:
         """Runs the containerizer.
 
@@ -28,7 +32,6 @@ class DbtContainerizer(PythonContainerizer):
         self.package_manager = super().detect_package_manager()
         self.detect_profiles_file()
         super().generate(self.target_dir, self.replacements)
-        
 
     def detect_profiles_file(self) -> None:
         """Determines whether or not there is a profiles.yml file in the project root.
@@ -73,14 +76,13 @@ class DbtContainerizer(PythonContainerizer):
                             'threads': 8,
                             'client_session_keep_alive': False,
                         }
-                    }
+                    },
                 }
             }
 
             Path("profiles.yml").write_text(yaml.dump(profiles_template))
         else:
             raise AbortPalm("Aborting")
-
 
     def has_profiles_file(self) -> bool:
         """Checks whether or not the project has a profiles.yml file.
@@ -106,14 +108,21 @@ class DbtContainerizer(PythonContainerizer):
             "What dbt version do you want to use? (It must be 0.19.0 or later.)"
         )
 
-        accepted_versions = ['0.19.0', '0.19.1', '0.19.2', '0.20.0', '0.20.1', '0.20.2', '0.21.0']
+        accepted_versions = [
+            '0.19.0',
+            '0.19.1',
+            '0.19.2',
+            '0.20.0',
+            '0.20.1',
+            '0.20.2',
+            '0.21.0',
+        ]
 
         if dbt_version not in accepted_versions:
             click.secho("Invalid dbt version", fg="red")
             sys.exit(1)
 
         return dbt_version
-
 
     @property
     def replacements(self) -> dict:
@@ -125,7 +134,6 @@ class DbtContainerizer(PythonContainerizer):
             "package_manager": self.package_manager,
             "dbt_version": self.dbt_version,
         }
-    
 
     def validate_python_version(self) -> bool:
         """Pass through function - the PythonContainerizer handles this functionality.
@@ -134,5 +142,3 @@ class DbtContainerizer(PythonContainerizer):
             True
         """
         return True
-
-    
