@@ -23,6 +23,7 @@ class DbtContainerizer(PythonContainerizer):
         Returns:
             None
         """
+        self.get_dbt_version()
         super().check_setup()
         self.package_manager = super().detect_package_manager()
         self.detect_profiles_file()
@@ -94,6 +95,24 @@ class DbtContainerizer(PythonContainerizer):
                 return True
 
         return False
+
+    def get_dbt_version(self) -> str:
+        """Prompts the user for a DBT version.
+
+        Returns:
+            str: DBT version
+        """
+        dbt_version = click.prompt(
+            "What dbt version do you want to use? (It must be 0.19.0 or later.)"
+        )
+
+        accepted_versions = ['0.19.0', '0.19.1', '0.19.2', '0.20.0', '0.20.1', '0.20.2', '0.21.0']
+
+        if dbt_version not in accepted_versions:
+            click.secho("Invalid dbt version", fg="red")
+            sys.exit(1)
+
+        return dbt_version
 
 
     @property
