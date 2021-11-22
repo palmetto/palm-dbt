@@ -30,7 +30,7 @@ setup(
     url='https://github.com/palmetto/palm-dbt',
     packages=find_namespace_packages(include=['palm', 'palm.*']),
     package_data={'': ['palm/plugins/dbt/**/*']},
-    install_requires=['palmcli>=2.0.0'],
+    install_requires=Path("palm/plugins/dbt/requirements.txt").read_text().splitlines(),
     license='Apache License 2.0',
     classifiers=[
         'Development Status :: 4 - Beta',
