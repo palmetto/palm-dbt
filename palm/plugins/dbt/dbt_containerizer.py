@@ -104,25 +104,19 @@ class DbtContainerizer(PythonContainerizer):
         Returns:
             str: DBT version
         """
-        dbt_version = click.prompt(
-            "What dbt version do you want to use? (It must be 0.19.0 or later.)"
-        )
+        semver = self.dbt_version.split(".")
+        minimum_version = ['0', '19']
+        maximum_version = ['0', '21']
 
-        accepted_versions = [
-            '0.19.0',
-            '0.19.1',
-            '0.19.2',
-            '0.20.0',
-            '0.20.1',
-            '0.20.2',
-            '0.21.0',
-        ]
-
-        if dbt_version not in accepted_versions:
-            click.secho("Invalid dbt version", fg="red")
+        if semver[0] < minimum_version[0] and semver[1] < minimum_version[1]:
+            click.secho("Invalid dbt version, must be > 0.19", fg="red")
+            sys.exit(1)
+        
+        if semver[0] > maximum_version[0] and semver[1] > maximum_version[1]:
+            click.secho("Invalid dbt version, must be < 0.21", fg="red")
             sys.exit(1)
 
-        return dbt_version
+        return self.dbt_version
 
     @property
     def replacements(self) -> dict:
