@@ -113,10 +113,18 @@ class DbtContainerizer(PythonContainerizer):
         maximum_version = ['0', '21']
 
         if semver[0] <= minimum_version[0] and semver[1] < minimum_version[1]:
-            return (False, f'Invalid dbt version, must be > {".".join(minimum_version)}')
+            return (
+                False,
+                f'Invalid dbt version, must be > {".".join(minimum_version)}',
+            )
 
-        if semver[0] > maximum_version[0] or (semver[0] == maximum_version[0] and semver[1] > maximum_version[1]):
-            return (False, f'Invalid dbt version, must be < {".".join(maximum_version)}')
+        if semver[0] > maximum_version[0] or (
+            semver[0] == maximum_version[0] and semver[1] > maximum_version[1]
+        ):
+            return (
+                False,
+                f'Invalid dbt version, must be < {".".join(maximum_version)}',
+            )
 
         return (True, f'{self.dbt_version} is valid')
 
