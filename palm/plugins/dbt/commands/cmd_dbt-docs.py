@@ -1,6 +1,7 @@
 import click
 from palm.plugins.dbt.dbt_palm_utils import dbt_env_vars
 
+
 @click.command("dbt-docs")
 @click.pass_context
 def cli(ctx):

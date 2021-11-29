@@ -27,7 +27,11 @@ class DbtContainerizer(PythonContainerizer):
         Returns:
             None
         """
-        self.get_dbt_version()
+        is_valid_version, message = self.validate_dbt_version()
+        if not is_valid_version:
+            click.secho(message, fg="red")
+            sys.exit(1)
+
         super().check_setup()
         self.package_manager = super().detect_package_manager()
         self.detect_profiles_file()
@@ -98,31 +102,31 @@ class DbtContainerizer(PythonContainerizer):
 
         return False
 
-    def get_dbt_version(self) -> str:
+    def validate_dbt_version(self) -> tuple[bool, str]:
         """Prompts the user for a DBT version.
 
         Returns:
             str: DBT version
         """
-        dbt_version = click.prompt(
-            "What dbt version do you want to use? (It must be 0.19.0 or later.)"
-        )
+        semver = self.dbt_version.split(".")
+        minimum_version = ['0', '19']
+        maximum_version = ['0', '21']
 
-        accepted_versions = [
-            '0.19.0',
-            '0.19.1',
-            '0.19.2',
-            '0.20.0',
-            '0.20.1',
-            '0.20.2',
-            '0.21.0',
-        ]
+        if semver[0] <= minimum_version[0] and semver[1] < minimum_version[1]:
+            return (
+                False,
+                f'Invalid dbt version, must be > {".".join(minimum_version)}',
+            )
 
-        if dbt_version not in accepted_versions:
-            click.secho("Invalid dbt version", fg="red")
-            sys.exit(1)
+        if semver[0] > maximum_version[0] or (
+            semver[0] == maximum_version[0] and semver[1] > maximum_version[1]
+        ):
+            return (
+                False,
+                f'Invalid dbt version, must be < {".".join(maximum_version)}',
+            )
 
-        return dbt_version
+        return (True, f'{self.dbt_version} is valid')
 
     @property
     def replacements(self) -> dict:

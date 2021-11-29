@@ -17,6 +17,7 @@ def create_dbt_sql_file(model_name: str, models_path: Path) -> None:
 
     output_file = models_path / model_name / f'{model_name}.sql'
 
+
     filedata = get_ref_file()
 
     filedata = re.sub('"', "", filedata, flags=re.IGNORECASE)
@@ -42,8 +43,20 @@ def sql_to_yml() -> str:
     filedata = get_ref_file()
     results = ''
 
-    select_columns = re.sub('(?s:.*)select\W*distinct\W|[ ]{0,}from[\W.\w]{1,}', '', filedata, flags=re.MULTILINE | re.IGNORECASE)
-    select_columns= ["".join(tuples).lower() for tuples in re.findall('([a-z\_]{1,} -- .*)|([a-z\_]{1,}[ ]{0,}$)', select_columns, flags=re.MULTILINE | re.IGNORECASE)]
+    select_columns = re.sub(
+        '(?s:.*)select\W*distinct\W|[ ]{0,}from[\W.\w]{1,}',
+        '',
+        filedata,
+        flags=re.MULTILINE | re.IGNORECASE,
+    )
+    select_columns = [
+        "".join(tuples).lower()
+        for tuples in re.findall(
+            '([a-z\_]{1,} -- .*)|([a-z\_]{1,}[ ]{0,}$)',
+            select_columns,
+            flags=re.MULTILINE | re.IGNORECASE,
+        )
+    ]
 
     columns = []
 
@@ -59,7 +72,9 @@ def sql_to_yml() -> str:
         except IndexError:
             description = 'TBD'
 
-        formatted = "\n      - name: " + name + "\n        description: " + description + "\n"
+        formatted = (
+            "\n      - name: " + name + "\n        description: " + description + "\n"
+        )
 
         results = results + formatted
 
@@ -74,14 +89,19 @@ def sql_to_md() -> str:
     """
     filedata = get_ref_file()
 
-    model_notes_present = len(re.findall('\/\*\D([\D]*)\*\/([\D\d]*)', filedata, flags=re.MULTILINE)) > 0
+    model_notes_present = (
+        len(re.findall('\/\*\D([\D]*)\*\/([\D\d]*)', filedata, flags=re.MULTILINE)) > 0
+    )
 
     if model_notes_present:
-        results = re.sub('\/\*\D([\D]*)\*\/([\D\d]*)', r'\1', filedata, flags=re.MULTILINE)
-        results = re.sub('(?!\A)^', ' '*4, results, flags=re.MULTILINE)
+        results = re.sub(
+            '\/\*\D([\D]*)\*\/([\D\d]*)', r'\1', filedata, flags=re.MULTILINE
+        )
+        results = re.sub('(?!\A)^', ' ' * 4, results, flags=re.MULTILINE)
         return results
 
     return "## Business Notes\n\n\t## Developer Notes"
+
 
 @lru_cache(maxsize=1)
 def get_ref_file() -> str:
@@ -105,10 +125,14 @@ def create_ref_files():
     breakpoint
     for file in files:
         copy(ref_file_templates / file, ref_file_dir / file)
-    click.secho("Ref files created! Update the ref file and re-run the command to generate your model", fg="green")
+    click.secho(
+        "Ref files created! Update the ref file and re-run the command to generate your model",
+        fg="green",
+    )
 
 
 ## helper functions
+
 
 def get_replacements() -> list:
     """Get list of replacements
@@ -116,7 +140,7 @@ def get_replacements() -> list:
     Returns:
         list: list of replacements
     """
-    
+
     replacements = []
     directory = Path.cwd() / 'source_systems'
 
@@ -126,10 +150,10 @@ def get_replacements() -> list:
             replacements.append(replacement_for_file)
 
     return replacements
-    
+
 
 def get_replacements_for_file(file: Path) -> tuple:
-    """ Extracts the dbt naming conventions from a given file
+    """Extracts the dbt naming conventions from a given file
 
     Args:
         file ([Path]): Path to a .yml file in sourcE_systems directory
@@ -154,16 +178,22 @@ def get_replacements_for_file(file: Path) -> tuple:
     paths = [database + '.' + schema + '.' + path for path in src_and_tables[1:]]
 
     for path in paths:
-        dbt_path =  "{{ source('" + src + "', '" + path.split('.')[2] + "') }}"
+        dbt_path = "{{ source('" + src + "', '" + path.split('.')[2] + "') }}"
         return (path, dbt_path)
 
 
 def return_regex(typ, txt):
 
     regex_dict = {
-      'src_and_tables': re.compile("- name[: ]{0,3}(.*\_{0,}.*)\n", flags=re.IGNORECASE | re.MULTILINE)
-      , 'database': re.compile("database[: ]{0,3}(.*\_{0,}.*)\n", flags=re.IGNORECASE | re.MULTILINE)
-      , 'schema': re.compile("schema[: ]{0,3}(.*\_{0,}.*)\n", flags=re.IGNORECASE | re.MULTILINE)
+        'src_and_tables': re.compile(
+            "- name[: ]{0,3}(.*\_{0,}.*)\n", flags=re.IGNORECASE | re.MULTILINE
+        ),
+        'database': re.compile(
+            "database[: ]{0,3}(.*\_{0,}.*)\n", flags=re.IGNORECASE | re.MULTILINE
+        ),
+        'schema': re.compile(
+            "schema[: ]{0,3}(.*\_{0,}.*)\n", flags=re.IGNORECASE | re.MULTILINE
+        ),
     }
 
     regexp = regex_dict[typ]
@@ -177,7 +207,6 @@ def return_regex(typ, txt):
 
     return results
 
+
 def lower_repl(match):
-     return "JOIN {{ ref('" + match.group(1).lower() + "') }}"
-
-
+    return "JOIN {{ ref('" + match.group(1).lower() + "') }}"
