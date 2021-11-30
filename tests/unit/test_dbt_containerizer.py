@@ -117,3 +117,12 @@ def test_profile_strategy_default(tmpdir, monkeypatch):
     with mock.patch("pathlib.Path.home", (lambda : Path(str(home_dir)))):
         assert DbtContainerizer.determine_profile_strategy(project_dir) == \
         (str(dbt_dir), "/root/.dbt",)
+
+def test_profile_strategy_none(tmpdir, monkeypatch):
+    """If we can't find a profile, return nada."""
+    home_dir = (tmpdir / "userhome")
+    home_dir.mkdir()
+    project_dir = (tmpdir / "awesome_dbt_project")
+    with mock.patch("pathlib.Path.home", (lambda : Path(str(home_dir)))):
+        assert DbtContainerizer.determine_profile_strategy(project_dir) == \
+        (None, None,)
