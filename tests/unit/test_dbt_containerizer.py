@@ -88,6 +88,7 @@ def test_profile_strategy_in_project(tmpdir, monkeypatch):
     """
     config_dir = (tmpdir / "config")
     config_dir.mkdir()
-    with monkeypatch.setenv("DBT_PROFILES_DIR", config_dir):
+    with monkeypatch.context() as monkey:
+        monkey.setenv("DBT_PROFILES_DIR", str(config_dir))
         assert DbtContainerizer.determine_profile_strategy(tmpdir) == \
-            "./config", "/app/config"
+            ("./config", "/app/config",)

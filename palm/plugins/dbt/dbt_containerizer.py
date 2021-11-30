@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from typing import Optional, \
     Tuple
@@ -148,12 +149,26 @@ class DbtContainerizer(PythonContainerizer):
         """
         return True
 
-    def determine_profile_strategy() -> Tuple[str,str]:
+    def determine_profile_strategy(project_path:"Path") -> Tuple[str,str]:
         """determines where the on-the-host project 
            has been storing the profiles.yml file
+
+           Args:
+            project_path: the project root to convert
            Returns:
               the host and container volume mount values
         """
+        if profile_path := os.getenv("DBT_PROFILES_DIR"):
+            profiles_dir = Path(profile_path)
+            if not profiles_dir.exists():
+                raise AbortPalm("your host has a non-existant DBT_PROFILES_DIR value!")
+            if project_path in profiles_dir.parents:
+                def return_relative(prefix:str) -> str:
+                    return str(profiles_dir).\
+                        replace(str(project_path),
+                                    prefix)
+                return (return_relative("."),
+                        return_relative("/app"),)
         return False
         ## is profile path envar set? 
             ## is it in the repo?
