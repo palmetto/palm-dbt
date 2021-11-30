@@ -1,12 +1,12 @@
-import os
+import os, \
+    sys, \
+    yaml
 from pathlib import Path
 from typing import Optional, \
     Tuple
 from palm.containerizer import PythonContainerizer
-import sys
 from palm.palm_exceptions import AbortPalm
 import click
-import yaml
 
 
 class DbtContainerizer(PythonContainerizer):
@@ -34,75 +34,8 @@ class DbtContainerizer(PythonContainerizer):
             click.secho(message, fg="red")
             sys.exit(1)
 
-        super().check_setup()
         self.package_manager = super().detect_package_manager()
-        self.detect_profiles_file()
         super().generate(self.target_dir, self.replacements)
-
-    def detect_profiles_file(self) -> None:
-        """Determines whether or not there is a profiles.yml file in the project root.
-
-        Returns:
-            str: exists | unknown
-        """
-        if self.has_profiles_file():
-            return
-
-        # Unknown profiles.yml, prompt to setup profiles.yml
-        try:
-            self.optionally_add_profiles_file()
-        except AbortPalm:
-            click.secho("Aborting containerization", fg="red")
-            sys.exit(1)
-        return
-
-    def optionally_add_profiles_file(self):
-        """Optionally, add a profiles.yml file to the project root if it doesn't exist
-
-        Raises:
-            AbortPalm: Abort if user does not want to add profiles.yml
-        """
-        use_profiles_default = click.confirm(
-            "Unable to detect a profiles.yml file, would you like to create one?"
-        )
-        if use_profiles_default:
-            profiles_template = {
-                self.project_name: {
-                    'target': 'DEVELOPMENT',
-                    'outputs': {
-                        'DEVELOPMENT': {
-                            'type': 'postgres',
-                            'account': '',
-                            'user': '',
-                            'password': '',
-                            'role': '',
-                            'database': '',
-                            'warehouse': '',
-                            'schema': '',
-                            'threads': 8,
-                            'client_session_keep_alive': False,
-                        }
-                    },
-                }
-            }
-
-            Path("profiles.yml").write_text(yaml.dump(profiles_template))
-        else:
-            raise AbortPalm("Aborting")
-
-    def has_profiles_file(self) -> bool:
-        """Checks whether or not the project has a profiles.yml file.
-
-        Returns:
-            bool: true if profiles.yml or profiles.yaml exists
-        """
-        profiles_files = ['profiles.yml', 'profiles.yaml']
-
-        for file in profiles_files:
-            if Path(file).exists():
-                return True
-
-        return False
 
     def validate_dbt_version(self) -> tuple[bool, str]:
         """Prompts the user for a DBT version.
@@ -135,11 +68,25 @@ class DbtContainerizer(PythonContainerizer):
         """
         Return a dictionary of replacements for the dbt template.
         """
-        return {
+        profile_strategy = self.determine_profile_strategy(Path.cwd())
+        replacements = dict()
+        if any(profile_strategy):
+            replacements = { 
+             "dbt_profile_host": profile_strategy[0],
+             "profile_volume_mount": ":".join(("${DBT_PROFILE_HOST}",
+                                                profile_strategy[1]))
+            } 
+            with Path(".env").open("a") as env_file:
+                env_file.write((f"DBT_PROFILE_HOST={profile_strategy[0]}\n"
+                                f"DBT_PROFILES_DIR={profile_strategy[1]}"))
+
+
+        replacements.update({
             "project_name": self.project_name,
             "package_manager": self.package_manager,
             "dbt_version": self.dbt_version,
-        }
+        })
+        return replacements
 
     def validate_python_version(self) -> bool:
         """Pass through function - the PythonContainerizer handles this functionality.
@@ -149,7 +96,8 @@ class DbtContainerizer(PythonContainerizer):
         """
         return True
 
-    def determine_profile_strategy(project_path:"Path") -> Tuple[str,str]:
+    @classmethod
+    def determine_profile_strategy(cls, project_path:"Path") -> Tuple[str,str]:
         """determines where the on-the-host project 
            has been storing the profiles.yml file
 
@@ -173,13 +121,7 @@ class DbtContainerizer(PythonContainerizer):
             return str(profiles_dir), container_default
         default_profile_path = Path.home() / ".dbt"
         if not default_profile_path.exists():
+            click.secho("No DBT profile found. Skipping.", fg="yellow")
             return None, None
         return str(default_profile_path), container_default  
-        ## is profile path envar set? 
-            ## is it in the repo?
-                # create the envar path relative to the /app in container
-                # pass that as the compose envar for DBT_PROFILES_DIR
-            ## else
-                # explicitly set that path in .env via compose as /root/.dbt/profiles.yml
-        ## else
-            ## explicitly set expanded ~/.dbt/profiles.yml in env 
+        

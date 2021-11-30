@@ -29,7 +29,7 @@ setup(
     author_email='data-analytics-team@palmetto.com',
     url='https://github.com/palmetto/palm-dbt',
     packages=find_namespace_packages(include=['palm', 'palm.*']),
-    package_data={'': ['palm/plugins/dbt/**/*']},
+    package_data={'': ['*.md', '*.sql', '*.yaml', '*.yml', '*.txt']},
     install_requires=Path("palm/plugins/dbt/requirements.txt").read_text().splitlines(),
     license='Apache License 2.0',
     classifiers=[
