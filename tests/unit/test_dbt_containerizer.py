@@ -81,3 +81,13 @@ def test_validate_dbt_version(environment):
     c = DbtContainerizer(ctx, templates_dir, '1.0.0')
     is_valid, message = c.validate_dbt_version()
     assert not is_valid
+
+def test_profile_strategy_in_project(tmpdir, monkeypatch):
+    """When the DBT_PROFILES_DIR is inside the project, 
+       set the path in compose relative to /app
+    """
+    config_dir = (tmpdir / "config")
+    config_dir.mkdir()
+    with monkeypatch.setenv("DBT_PROFILES_DIR", config_dir):
+        assert DbtContainerizer.determine_profile_strategy(tmpdir) == \
+            "./config", "/app/config"

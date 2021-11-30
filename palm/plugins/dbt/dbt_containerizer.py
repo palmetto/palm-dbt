@@ -1,5 +1,6 @@
 from pathlib import Path
-from typing import Optional
+from typing import Optional, \
+    Tuple
 from palm.containerizer import PythonContainerizer
 import sys
 from palm.palm_exceptions import AbortPalm
@@ -146,3 +147,19 @@ class DbtContainerizer(PythonContainerizer):
             True
         """
         return True
+
+    def determine_profile_strategy() -> Tuple[str,str]:
+        """determines where the on-the-host project 
+           has been storing the profiles.yml file
+           Returns:
+              the host and container volume mount values
+        """
+        return False
+        ## is profile path envar set? 
+            ## is it in the repo?
+                # create the envar path relative to the /app in container
+                # pass that as the compose envar for DBT_PROFILES_DIR
+            ## else
+                # explicitly set that path in .env via compose as /root/.dbt/profiles.yml
+        ## else
+            ## explicitly set expanded ~/.dbt/profiles.yml in env 
