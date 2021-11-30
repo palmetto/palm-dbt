@@ -1,5 +1,6 @@
 import click
 import re
+from typing import Optional
 from pathlib import Path
 from palm.plugins.dbt.dbt_palm_utils import dbt_env_vars
 import palm.plugins.dbt.sql_to_dbt as sql_to_dbt
@@ -16,12 +17,39 @@ def cli():
 
 @cli.command('new')
 @click.pass_context
-@click.option("--name", multiple=False, required=True, help="Name of the model you are creating. Don't add 'dim_' or 'fact_' we do that for you!")
-@click.option("--model-dir", multiple=False, required=True, help="Parent directory for your model")
-@click.option("--model-type", multiple=False, default='dim', help="staging, intermediate, fact, dim - default is dim")
-@click.option("--use-ref-file", is_flag=True, help="Parses .palm/model_template/ref_files/ref_file.sql into .sql and .yml templates")
-def new(ctx, model_dir: str, name: str, model_type: str, use_ref_file: bool):
-    """ Generate a new model """
+@click.option(
+    "--name",
+    multiple=False,
+    required=True,
+    help="Name of the model you are creating. Don't add 'dim_' or 'fact_' we do that for you!",
+)
+@click.option(
+    "--model-type",
+    multiple=False,
+    default='dim',
+    help="staging, intermediate, fact, dim - default is dim",
+)
+@click.option(
+    "--model-dir",
+    multiple=False,
+    help="Subdirectory in /models directory for your model",
+)
+@click.option(
+    "--use-ref-file",
+    is_flag=True,
+    help="Parses .palm/model_template/ref_files/ref_file.sql into .sql and .yml templates",
+)
+def new(
+    ctx,
+    name: str,
+    model_type: str,
+    model_dir: Optional[str] = '',
+    use_ref_file: Optional[bool] = False,
+):
+    """Generate a new model
+
+    Generates a new model in your application's /models directory.
+    """
     click.echo(f'Generating your new {name} {model_type}!')
 
     if model_type not in valid_model_types:
@@ -51,7 +79,6 @@ def new(ctx, model_dir: str, name: str, model_type: str, use_ref_file: bool):
 
     create_model(model_name, model_dir, model_type, ctx, use_ref_file)
     create_docs(model_name, model_dir, model_type, ctx, use_ref_file)
-    
 
     # if use_ref_file:
     #     env_vars = dbt_env_vars(ctx.obj.palm.branch)
