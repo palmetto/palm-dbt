@@ -1,5 +1,6 @@
 import click
 import re
+from typing import Optional
 from pathlib import Path
 from palm.plugins.dbt.dbt_palm_utils import dbt_env_vars
 import palm.plugins.dbt.sql_to_dbt as sql_to_dbt
@@ -29,12 +30,26 @@ def cli():
     help="staging, intermediate, fact, dim - default is dim",
 )
 @click.option(
+    "--model-dir",
+    multiple=False,
+    help="Subdirectory in /models directory for your model",
+)
+@click.option(
     "--use-ref-file",
     is_flag=True,
     help="Parses .palm/model_template/ref_files/ref_file.sql into .sql and .yml templates",
 )
-def new(ctx, name: str, model_type: str, use_ref_file: bool):
-    """Generate a new model"""
+def new(
+    ctx,
+    name: str,
+    model_type: str,
+    model_dir: Optional[str] = '',
+    use_ref_file: Optional[bool] = False,
+):
+    """Generate a new model
+
+    Generates a new model in your application's /models directory.
+    """
     click.echo(f'Generating your new {name} {model_type}!')
 
     if model_type not in valid_model_types:
@@ -62,8 +77,8 @@ def new(ctx, name: str, model_type: str, use_ref_file: bool):
             )
             return
 
-    create_model(model_name, model_type, ctx, use_ref_file)
-    create_docs(model_name, model_type, ctx, use_ref_file)
+    create_model(model_name, model_dir, model_type, ctx, use_ref_file)
+    create_docs(model_name, model_dir, model_type, ctx, use_ref_file)
 
     # if use_ref_file:
     #     env_vars = dbt_env_vars(ctx.obj.palm.branch)
@@ -71,9 +86,9 @@ def new(ctx, name: str, model_type: str, use_ref_file: bool):
     #     click.secho(msg, fg="green" if success else "red")
 
 
-def create_model(model_name, model_type, ctx, use_ref_file):
+def create_model(model_name, model_dir, model_type, ctx, use_ref_file):
     model_template_path = Path(Path(__file__).parent.parent, 'model_template', 'model')
-    models_path = Path('models/arbor/', model_type)
+    models_path = Path('models/', model_dir, model_type)
 
     replacements = {
         'model_name': model_name,
@@ -89,12 +104,12 @@ def create_model(model_name, model_type, ctx, use_ref_file):
     click.echo(result)
 
     if use_ref_file:
-        sql_to_dbt.create_dbt_sql_file(model_name, model_type)
+        sql_to_dbt.create_dbt_sql_file(model_name, models_path)
 
 
-def create_docs(model_name, model_type, ctx, use_ref_file):
+def create_docs(model_name, model_dir, model_type, ctx, use_ref_file):
     docs_template_path = Path(Path(__file__).parent.parent, 'model_template', 'docs')
-    docs_path = Path('models/arbor/documentation/models/', model_type)
+    docs_path = Path('models/', model_dir, '/documentation/models/', model_type)
 
     replacements = {
         'model_name': model_name,
