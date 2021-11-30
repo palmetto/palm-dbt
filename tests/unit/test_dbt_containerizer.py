@@ -1,5 +1,6 @@
 import os
 import pytest
+import mock
 from pathlib import Path
 from palm.plugins.dbt.dbt_containerizer import DbtContainerizer
 from palm.environment import Environment
@@ -104,3 +105,15 @@ def test_profile_strategy_outside_project(tmpdir, monkeypatch):
         monkey.setenv("DBT_PROFILES_DIR", str(config_dir))
         assert DbtContainerizer.determine_profile_strategy(project_dir) == \
             (str(config_dir), "/root/.dbt",)
+
+def test_profile_strategy_default(tmpdir, monkeypatch):
+    """Without a DBT_PROFILES_DIR the default behavior 
+       is the user's home .dbt adirectory. 
+    """
+    home_dir = (tmpdir / "userhome")
+    dbt_dir = home_dir / ".dbt"
+    [d.mkdir() for d in (home_dir, dbt_dir,)]
+    project_dir = (tmpdir / "awesome_dbt_project")
+    with mock.patch("pathlib.Path.home", (lambda : Path(str(home_dir)))):
+        assert DbtContainerizer.determine_profile_strategy(project_dir) == \
+        (str(dbt_dir), "/root/.dbt",)

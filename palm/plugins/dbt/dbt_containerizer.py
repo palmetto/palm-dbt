@@ -158,6 +158,7 @@ class DbtContainerizer(PythonContainerizer):
            Returns:
               the host and container volume mount values
         """
+        container_default = "/root/.dbt"
         if profile_path := os.getenv("DBT_PROFILES_DIR"):
             profiles_dir = Path(profile_path)
             if not profiles_dir.exists():
@@ -169,8 +170,11 @@ class DbtContainerizer(PythonContainerizer):
                                     prefix)
                 return (return_relative("."),
                         return_relative("/app"),)
-            return str(profiles_dir), "/root/.dbt"
-        return False
+            return str(profiles_dir), container_default
+        default_profile_path = Path.home() / ".dbt"
+        if not default_profile_path.exists():
+            return None, None
+        return str(default_profile_path), container_default  
         ## is profile path envar set? 
             ## is it in the repo?
                 # create the envar path relative to the /app in container
