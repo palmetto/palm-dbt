@@ -84,7 +84,7 @@ def test_validate_dbt_version(environment):
 
 def test_profile_strategy_in_project(tmpdir, monkeypatch):
     """When the DBT_PROFILES_DIR is inside the project, 
-       set the path in compose relative to /app
+       set the path in compose and env relative to /app
     """
     config_dir = (tmpdir / "config")
     config_dir.mkdir()
@@ -92,3 +92,15 @@ def test_profile_strategy_in_project(tmpdir, monkeypatch):
         monkey.setenv("DBT_PROFILES_DIR", str(config_dir))
         assert DbtContainerizer.determine_profile_strategy(tmpdir) == \
             ("./config", "/app/config",)
+
+def test_profile_strategy_outside_project(tmpdir, monkeypatch):
+    """When the DBT_PROFILES_DIR is outside the project, 
+       set the path in compose and env absolutely
+    """
+    project_dir = (tmpdir / "awesome_dbt_project")
+    config_dir = (tmpdir / "config")
+    config_dir.mkdir()
+    with monkeypatch.context() as monkey:
+        monkey.setenv("DBT_PROFILES_DIR", str(config_dir))
+        assert DbtContainerizer.determine_profile_strategy(project_dir) == \
+            (str(config_dir), "/root/.dbt",)

@@ -169,6 +169,7 @@ class DbtContainerizer(PythonContainerizer):
                                     prefix)
                 return (return_relative("."),
                         return_relative("/app"),)
+            return str(profiles_dir), "/root/.dbt"
         return False
         ## is profile path envar set? 
             ## is it in the repo?
