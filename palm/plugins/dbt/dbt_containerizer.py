@@ -32,6 +32,12 @@ class DbtContainerizer(PythonContainerizer):
             sys.exit(1)
 
         self.package_manager = super().detect_package_manager()
+        (
+            self.profile_host_path,
+            self.profile_volume_path,
+        ) = self.determine_profile_strategy(Path.cwd())
+        if self.profile_host_path:
+            self.write_profile_envs()
         super().generate(self.target_dir, self.replacements)
 
     def validate_dbt_version(self) -> tuple[bool, str]:
@@ -65,23 +71,18 @@ class DbtContainerizer(PythonContainerizer):
         """
         Return a dictionary of replacements for the dbt template.
         """
-        profile_strategy = self.determine_profile_strategy(Path.cwd())
+
         replacements = dict()
-        if any(profile_strategy):
+        if self.profile_host_path:
             replacements = {
-                "dbt_profile_host": profile_strategy[0],
+                "dbt_profile_host": self.profile_host_path,
                 "profile_volume_mount": ":".join(
-                    ("${DBT_PROFILE_HOST}", profile_strategy[1])
+                    (
+                        "${DBT_PROFILE_HOST}",
+                        self.profile_volume_path,
+                    )
                 ),
             }
-            with Path(".env").open("a") as env_file:
-                env_file.write(
-                    (
-                        f"DBT_PROFILE_HOST={profile_strategy[0]}\n"
-                        f"DBT_PROFILES_DIR={profile_strategy[1]}"
-                    )
-                )
-
         replacements.update(
             {
                 "project_name": self.project_name,
@@ -98,6 +99,18 @@ class DbtContainerizer(PythonContainerizer):
             True
         """
         return True
+
+    def write_profile_envs(self) -> None:
+        """Writes dbt profile envars
+        to a new .env, or appends to existing env.
+        """
+        with Path(".env").open("a") as env_file:
+            env_file.write(
+                (
+                    f"DBT_PROFILE_HOST={self.profile_host_path}\n"
+                    f"DBT_PROFILES_DIR={self.profile_volume_path}"
+                )
+            )
 
     @classmethod
     def determine_profile_strategy(cls, project_path: "Path") -> Tuple[str, str]:
