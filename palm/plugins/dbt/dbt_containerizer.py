@@ -112,16 +112,25 @@ class DbtContainerizer(PythonContainerizer):
             if not profiles_dir.exists():
                 raise AbortPalm("Your host has a non-existant DBT_PROFILES_DIR value!")
             if project_path in profiles_dir.parents:
-                def return_relative(prefix:str) -> str:
-                    return str(profiles_dir).\
-                        replace(str(project_path),
-                                    prefix)
-                return (return_relative("."),
-                        return_relative("/app"),)
+                return cls._relative_paths(profiles_dir, project_path)
             return str(profiles_dir), container_default
         default_profile_path = Path.home() / ".dbt"
         if not default_profile_path.exists():
             click.secho("No DBT profile found. Skipping.", fg="yellow")
             return None, None
         return str(default_profile_path), container_default  
+
+    @classmethod
+    def _relative_paths(cls, 
+                        profiles_dir:str,
+                        project_path:str) -> tuple:
+        """the relative child path of the given profiles dir
+           Args:
+            profiles_dir: where is the profile? 
+            project_path: the root of the project
+           Returns:
+            relative host and container paths <host_relative_path>, <container_absolute_path>,
+        """
+        return tuple([str(profiles_dir).replace(str(project_path), prefix) \
+                      for prefix in (".","/app",)])
         
