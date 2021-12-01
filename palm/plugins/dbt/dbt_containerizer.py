@@ -1,9 +1,6 @@
-import os, \
-    sys, \
-    yaml
+import os, sys, yaml
 from pathlib import Path
-from typing import Optional, \
-    Tuple
+from typing import Optional, Tuple
 from palm.containerizer import PythonContainerizer
 from palm.palm_exceptions import AbortPalm
 import click
@@ -71,21 +68,27 @@ class DbtContainerizer(PythonContainerizer):
         profile_strategy = self.determine_profile_strategy(Path.cwd())
         replacements = dict()
         if any(profile_strategy):
-            replacements = { 
-             "dbt_profile_host": profile_strategy[0],
-             "profile_volume_mount": ":".join(("${DBT_PROFILE_HOST}",
-                                                profile_strategy[1]))
-            } 
+            replacements = {
+                "dbt_profile_host": profile_strategy[0],
+                "profile_volume_mount": ":".join(
+                    ("${DBT_PROFILE_HOST}", profile_strategy[1])
+                ),
+            }
             with Path(".env").open("a") as env_file:
-                env_file.write((f"DBT_PROFILE_HOST={profile_strategy[0]}\n"
-                                f"DBT_PROFILES_DIR={profile_strategy[1]}"))
+                env_file.write(
+                    (
+                        f"DBT_PROFILE_HOST={profile_strategy[0]}\n"
+                        f"DBT_PROFILES_DIR={profile_strategy[1]}"
+                    )
+                )
 
-
-        replacements.update({
-            "project_name": self.project_name,
-            "package_manager": self.package_manager,
-            "dbt_version": self.dbt_version,
-        })
+        replacements.update(
+            {
+                "project_name": self.project_name,
+                "package_manager": self.package_manager,
+                "dbt_version": self.dbt_version,
+            }
+        )
         return replacements
 
     def validate_python_version(self) -> bool:
@@ -97,14 +100,14 @@ class DbtContainerizer(PythonContainerizer):
         return True
 
     @classmethod
-    def determine_profile_strategy(cls, project_path:"Path") -> Tuple[str,str]:
-        """determines where the on-the-host project 
-           has been storing the profiles.yml file
+    def determine_profile_strategy(cls, project_path: "Path") -> Tuple[str, str]:
+        """determines where the on-the-host project
+        has been storing the profiles.yml file
 
-           Args:
-            project_path: the project root to convert
-           Returns:
-              the host and container volume mount values
+        Args:
+         project_path: the project root to convert
+        Returns:
+           the host and container volume mount values
         """
         container_default = "/root/.dbt"
         if profile_path := os.getenv("DBT_PROFILES_DIR"):
@@ -118,19 +121,23 @@ class DbtContainerizer(PythonContainerizer):
         if not default_profile_path.exists():
             click.secho("No DBT profile found. Skipping.", fg="yellow")
             return None, None
-        return str(default_profile_path), container_default  
+        return str(default_profile_path), container_default
 
     @classmethod
-    def _relative_paths(cls, 
-                        profiles_dir:str,
-                        project_path:str) -> tuple:
+    def _relative_paths(cls, profiles_dir: str, project_path: str) -> tuple:
         """the relative child path of the given profiles dir
-           Args:
-            profiles_dir: where is the profile? 
-            project_path: the root of the project
-           Returns:
-            relative host and container paths <host_relative_path>, <container_absolute_path>,
+        Args:
+         profiles_dir: where is the profile?
+         project_path: the root of the project
+        Returns:
+         relative host and container paths <host_relative_path>, <container_absolute_path>,
         """
-        return tuple([str(profiles_dir).replace(str(project_path), prefix) \
-                      for prefix in (".","/app",)])
-        
+        return tuple(
+            [
+                str(profiles_dir).replace(str(project_path), prefix)
+                for prefix in (
+                    ".",
+                    "/app",
+                )
+            ]
+        )
