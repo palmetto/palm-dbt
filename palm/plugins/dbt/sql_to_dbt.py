@@ -17,7 +17,6 @@ def create_dbt_sql_file(model_name: str, models_path: Path) -> None:
 
     output_file = models_path / model_name / f'{model_name}.sql'
 
-
     filedata = get_ref_file()
 
     filedata = re.sub('"', "", filedata, flags=re.IGNORECASE)
