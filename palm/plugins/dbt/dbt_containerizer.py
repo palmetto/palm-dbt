@@ -1,4 +1,4 @@
-import os, sys, yaml
+import os, sys
 from pathlib import Path
 from typing import Optional, Tuple
 from palm.containerizer import PythonContainerizer
