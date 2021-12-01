@@ -110,7 +110,7 @@ class DbtContainerizer(PythonContainerizer):
         if profile_path := os.getenv("DBT_PROFILES_DIR"):
             profiles_dir = Path(profile_path)
             if not profiles_dir.exists():
-                raise AbortPalm("your host has a non-existant DBT_PROFILES_DIR value!")
+                raise AbortPalm("Your host has a non-existant DBT_PROFILES_DIR value!")
             if project_path in profiles_dir.parents:
                 def return_relative(prefix:str) -> str:
                     return str(profiles_dir).\
