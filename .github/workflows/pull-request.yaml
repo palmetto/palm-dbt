@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install
         run: |
-          pip install palm
+          pip install -r dev-requirements.txt 
       - name: PyTest
         run: pytest
   lint:
