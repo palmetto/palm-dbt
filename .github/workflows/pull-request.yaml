@@ -16,7 +16,7 @@ jobs:
           - 3.7
           - 3.8
           - 3.9
-    container: python:${{ python-version }}
+    container: python:${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@v2
       - name: Install
