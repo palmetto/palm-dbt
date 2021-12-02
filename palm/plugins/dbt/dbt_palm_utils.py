@@ -1,5 +1,5 @@
 import re
-from typing import Optional
+from typing import Optional, Dict, Tuple
 from palm.plugins.dbt.local_user_lookup import local_user_lookup
 
 """ Shared DBT utilities to build out common CLI options """
@@ -24,8 +24,8 @@ def _short_cycle(
     no_fail_fast: Optional[bool] = False,
     full_refresh: Optional[bool] = False,
     no_seed: Optional[bool] = False,
-    models: Optional[tuple] = (),
-    macros: Optional[tuple] = (),
+    models: Optional[Tuple] = (),
+    macros: Optional[Tuple] = (),
 ) -> str:
 
     command = "" if no_seed else f" dbt seed --full-refresh && "
@@ -53,9 +53,9 @@ def _long_cycle(
     no_fail_fast: Optional[bool] = False,
     full_refresh: Optional[bool] = False,
     no_seed: Optional[bool] = False,
-    select: Optional[tuple] = (),
-    models: Optional[tuple] = (),
-    macros: Optional[tuple] = (),
+    select: Optional[Tuple] = (),
+    models: Optional[Tuple] = (),
+    macros: Optional[Tuple] = (),
 ) -> str:
     seed_cmd = "" if no_seed else "&& dbt seed --full-refresh"
     command = f"dbt clean && dbt deps {seed_cmd}"
@@ -80,7 +80,7 @@ def _long_cycle(
     return command
 
 
-def dbt_env_vars(branch: str) -> dict:
+def dbt_env_vars(branch: str) -> Dict:
     return {
         'PDP_DEV_SCHEMA': _generate_schema_from_branch(branch),
         'PDP_ENV': 'DEVELOPMENT',  # Deprecated - this will be removed!
