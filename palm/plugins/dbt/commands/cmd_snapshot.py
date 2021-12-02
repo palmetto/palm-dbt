@@ -1,5 +1,5 @@
 import click
-from typing import Optional
+from typing import Optional, Tuple
 from palm.plugins.dbt.dbt_palm_utils import dbt_env_vars
 
 
@@ -10,7 +10,7 @@ from palm.plugins.dbt.dbt_palm_utils import dbt_env_vars
 @click.option("--select", multiple=True)
 @click.option("--fast", is_flag=True, help="will skip clean/deps/seed")
 @click.pass_context
-def cli(ctx, persist: bool, fast: bool, select: Optional[tuple] = tuple()):
+def cli(ctx, persist: bool, fast: bool, select: Optional[Tuple] = tuple()):
     """Executes the DBT snapshots."""
 
     if fast:

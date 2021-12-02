@@ -1,5 +1,6 @@
 import re
 import click
+from typing import Tuple
 from shutil import copy
 from pathlib import Path
 from functools import lru_cache
@@ -151,7 +152,7 @@ def get_replacements() -> list:
     return replacements
 
 
-def get_replacements_for_file(file: Path) -> tuple:
+def get_replacements_for_file(file: Path) -> Tuple:
     """Extracts the dbt naming conventions from a given file
 
     Args:

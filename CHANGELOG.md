@@ -1,5 +1,10 @@
 # Palm dbt Changelog
 
+## 0.1.1
+
+> 12/02/2021
+
+- **Bug Fix**: Type hints were causing containerize to fail in python 3.8 and below. Issue #30
 ## 0.1.0
 
 > 12/01/2021
