@@ -33,12 +33,10 @@ For example, if you wanted to containerize your existing dbt project running on 
   palm containerize --version 0.21.0
 ```
 
-
 ## Check dbt plugin version
 
 Check the version of palm-dbt inside a project in which you have configured palm with the dbt plugin:
 `palm plugin versions`
-
 
 ### Adding palm dbt macros
 
