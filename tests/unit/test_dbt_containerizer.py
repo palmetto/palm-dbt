@@ -2,7 +2,7 @@ import os
 import pytest
 from unittest import mock
 from pathlib import Path
-from palm.plugins.dbt.dbt_containerizer import DbtContainerizer
+from ...palm.plugins.dbt.dbt_containerizer import DbtContainerizer
 from palm.environment import Environment
 from palm.plugin_manager import PluginManager
 from palm.palm_config import PalmConfig
