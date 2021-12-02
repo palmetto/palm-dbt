@@ -1,6 +1,6 @@
 import os
 import pytest
-import mock
+from unittest import mock
 from pathlib import Path
 from palm.plugins.dbt.dbt_containerizer import DbtContainerizer
 from palm.environment import Environment
