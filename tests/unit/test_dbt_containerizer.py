@@ -1,5 +1,6 @@
 import os
 import pytest
+import mock
 from pathlib import Path
 from palm.plugins.dbt.dbt_containerizer import DbtContainerizer
 from palm.environment import Environment
@@ -81,3 +82,65 @@ def test_validate_dbt_version(environment):
     c = DbtContainerizer(ctx, templates_dir, '1.0.0')
     is_valid, message = c.validate_dbt_version()
     assert not is_valid
+
+
+def test_profile_strategy_in_project(tmpdir, monkeypatch):
+    """When the DBT_PROFILES_DIR is inside the project,
+    set the path in compose and env relative to /app
+    """
+    config_dir = tmpdir / "config"
+    config_dir.mkdir()
+    with monkeypatch.context() as monkey:
+        monkey.setenv("DBT_PROFILES_DIR", str(config_dir))
+        assert DbtContainerizer.determine_profile_strategy(tmpdir) == (
+            "./config",
+            "/app/config",
+        )
+
+
+def test_profile_strategy_outside_project(tmpdir, monkeypatch):
+    """When the DBT_PROFILES_DIR is outside the project,
+    set the path in compose and env absolutely
+    """
+    project_dir = tmpdir / "awesome_dbt_project"
+    config_dir = tmpdir / "config"
+    config_dir.mkdir()
+    with monkeypatch.context() as monkey:
+        monkey.setenv("DBT_PROFILES_DIR", str(config_dir))
+        assert DbtContainerizer.determine_profile_strategy(project_dir) == (
+            str(config_dir),
+            "/root/.dbt",
+        )
+
+
+def test_profile_strategy_default(tmpdir, monkeypatch):
+    """Without a DBT_PROFILES_DIR the default behavior
+    is the user's home .dbt adirectory.
+    """
+    home_dir = tmpdir / "userhome"
+    dbt_dir = home_dir / ".dbt"
+    [
+        d.mkdir()
+        for d in (
+            home_dir,
+            dbt_dir,
+        )
+    ]
+    project_dir = tmpdir / "awesome_dbt_project"
+    with mock.patch("pathlib.Path.home", (lambda: Path(str(home_dir)))):
+        assert DbtContainerizer.determine_profile_strategy(project_dir) == (
+            str(dbt_dir),
+            "/root/.dbt",
+        )
+
+
+def test_profile_strategy_none(tmpdir, monkeypatch):
+    """If we can't find a profile, return nada."""
+    home_dir = tmpdir / "userhome"
+    home_dir.mkdir()
+    project_dir = tmpdir / "awesome_dbt_project"
+    with mock.patch("pathlib.Path.home", (lambda: Path(str(home_dir)))):
+        assert DbtContainerizer.determine_profile_strategy(project_dir) == (
+            None,
+            None,
+        )

@@ -7,6 +7,9 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./:/app
+    {% if profile_volume_mount %}
+      - {{ profile_volume_mount }}
+    {% endif %}
     env_file:
       - .env
     ports: 

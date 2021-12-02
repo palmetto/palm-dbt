@@ -25,7 +25,14 @@ plugins:
   - dbt
 ```
 
-If you optionally accept the prompt to add the profiles.yml file, do be sure to fill it in properly as well. Your dbt project will not run without it!
+## Palm-ing an existing dbt project
+palm-dbt ships with a command to containerize and convert your existing dbt project.
+
+```
+  palm containerize
+```
+
+Follow the prompts to select a dbt version and you will be ready to use this package. 
 
 ### Adding palm dbt macros
 

@@ -1,10 +1,9 @@
+import os, sys
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Tuple
 from palm.containerizer import PythonContainerizer
-import sys
 from palm.palm_exceptions import AbortPalm
 import click
-import yaml
 
 
 class DbtContainerizer(PythonContainerizer):
@@ -32,75 +31,14 @@ class DbtContainerizer(PythonContainerizer):
             click.secho(message, fg="red")
             sys.exit(1)
 
-        super().check_setup()
         self.package_manager = super().detect_package_manager()
-        self.detect_profiles_file()
+        (
+            self.profile_host_path,
+            self.profile_volume_path,
+        ) = self.determine_profile_strategy(Path.cwd())
+        if self.profile_host_path:
+            self.write_profile_envs()
         super().generate(self.target_dir, self.replacements)
-
-    def detect_profiles_file(self) -> None:
-        """Determines whether or not there is a profiles.yml file in the project root.
-
-        Returns:
-            str: exists | unknown
-        """
-        if self.has_profiles_file():
-            return
-
-        # Unknown profiles.yml, prompt to setup profiles.yml
-        try:
-            self.optionally_add_profiles_file()
-        except AbortPalm:
-            click.secho("Aborting containerization", fg="red")
-            sys.exit(1)
-        return
-
-    def optionally_add_profiles_file(self):
-        """Optionally, add a profiles.yml file to the project root if it doesn't exist
-
-        Raises:
-            AbortPalm: Abort if user does not want to add profiles.yml
-        """
-        use_profiles_default = click.confirm(
-            "Unable to detect a profiles.yml file, would you like to create one?"
-        )
-        if use_profiles_default:
-            profiles_template = {
-                self.project_name: {
-                    'target': 'DEVELOPMENT',
-                    'outputs': {
-                        'DEVELOPMENT': {
-                            'type': 'postgres',
-                            'account': '',
-                            'user': '',
-                            'password': '',
-                            'role': '',
-                            'database': '',
-                            'warehouse': '',
-                            'schema': '',
-                            'threads': 8,
-                            'client_session_keep_alive': False,
-                        }
-                    },
-                }
-            }
-
-            Path("profiles.yml").write_text(yaml.dump(profiles_template))
-        else:
-            raise AbortPalm("Aborting")
-
-    def has_profiles_file(self) -> bool:
-        """Checks whether or not the project has a profiles.yml file.
-
-        Returns:
-            bool: true if profiles.yml or profiles.yaml exists
-        """
-        profiles_files = ['profiles.yml', 'profiles.yaml']
-
-        for file in profiles_files:
-            if Path(file).exists():
-                return True
-
-        return False
 
     def validate_dbt_version(self) -> tuple[bool, str]:
         """Prompts the user for a DBT version.
@@ -133,11 +71,26 @@ class DbtContainerizer(PythonContainerizer):
         """
         Return a dictionary of replacements for the dbt template.
         """
-        return {
-            "project_name": self.project_name,
-            "package_manager": self.package_manager,
-            "dbt_version": self.dbt_version,
-        }
+
+        replacements = dict()
+        if self.profile_host_path:
+            replacements = {
+                "dbt_profile_host": self.profile_host_path,
+                "profile_volume_mount": ":".join(
+                    (
+                        "${DBT_PROFILE_HOST}",
+                        self.profile_volume_path,
+                    )
+                ),
+            }
+        replacements.update(
+            {
+                "project_name": self.project_name,
+                "package_manager": self.package_manager,
+                "dbt_version": self.dbt_version,
+            }
+        )
+        return replacements
 
     def validate_python_version(self) -> bool:
         """Pass through function - the PythonContainerizer handles this functionality.
@@ -146,3 +99,58 @@ class DbtContainerizer(PythonContainerizer):
             True
         """
         return True
+
+    def write_profile_envs(self) -> None:
+        """Writes dbt profile envars
+        to a new .env, or appends to existing env.
+        """
+        with Path(".env").open("a") as env_file:
+            env_file.write(
+                (
+                    f"DBT_PROFILE_HOST={self.profile_host_path}\n"
+                    f"DBT_PROFILES_DIR={self.profile_volume_path}"
+                )
+            )
+
+    @classmethod
+    def determine_profile_strategy(cls, project_path: "Path") -> Tuple[str, str]:
+        """determines where the on-the-host project
+        has been storing the profiles.yml file
+
+        Args:
+         project_path: the project root to convert
+        Returns:
+           the host and container volume mount values
+        """
+        container_default = "/root/.dbt"
+        if profile_path := os.getenv("DBT_PROFILES_DIR"):
+            profiles_dir = Path(profile_path)
+            if not profiles_dir.exists():
+                raise AbortPalm("Your host has a non-existant DBT_PROFILES_DIR value!")
+            if project_path in profiles_dir.parents:
+                return cls._relative_paths(profiles_dir, project_path)
+            return str(profiles_dir), container_default
+        default_profile_path = Path.home() / ".dbt"
+        if not default_profile_path.exists():
+            click.secho("No DBT profile found. Skipping.", fg="yellow")
+            return None, None
+        return str(default_profile_path), container_default
+
+    @classmethod
+    def _relative_paths(cls, profiles_dir: str, project_path: str) -> tuple:
+        """the relative child path of the given profiles dir
+        Args:
+         profiles_dir: where is the profile?
+         project_path: the root of the project
+        Returns:
+         relative host and container paths <host_relative_path>, <container_absolute_path>,
+        """
+        return tuple(
+            [
+                str(profiles_dir).replace(str(project_path), prefix)
+                for prefix in (
+                    ".",
+                    "/app",
+                )
+            ]
+        )
