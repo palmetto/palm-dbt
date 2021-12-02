@@ -1,5 +1,5 @@
 import click
-from typing import Optional
+from typing import Optional, Tuple
 from palm.plugins.dbt.dbt_palm_utils import shell_options, dbt_env_vars
 
 
@@ -19,8 +19,8 @@ def cli(
     persist: bool,
     no_seed: bool,
     no_fail_fast: bool,
-    models: Optional[tuple] = tuple(),
-    select: Optional[tuple] = tuple(),
+    models: Optional[Tuple] = tuple(),
+    select: Optional[Tuple] = tuple(),
 ):
     """Tests the DBT repo"""
 

@@ -1,6 +1,6 @@
 import os, sys
 from pathlib import Path
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Dict
 from palm.containerizer import PythonContainerizer
 from palm.palm_exceptions import AbortPalm
 import click
@@ -40,7 +40,7 @@ class DbtContainerizer(PythonContainerizer):
             self.write_profile_envs()
         super().generate(self.target_dir, self.replacements)
 
-    def validate_dbt_version(self) -> tuple[bool, str]:
+    def validate_dbt_version(self) -> Tuple[bool, str]:
         """Prompts the user for a DBT version.
 
         Returns:
@@ -67,7 +67,7 @@ class DbtContainerizer(PythonContainerizer):
         return (True, f'{self.dbt_version} is valid')
 
     @property
-    def replacements(self) -> dict:
+    def replacements(self) -> Dict:
         """
         Return a dictionary of replacements for the dbt template.
         """
@@ -137,7 +137,7 @@ class DbtContainerizer(PythonContainerizer):
         return str(default_profile_path), container_default
 
     @classmethod
-    def _relative_paths(cls, profiles_dir: str, project_path: str) -> tuple:
+    def _relative_paths(cls, profiles_dir: str, project_path: str) -> Tuple[str, str]:
         """the relative child path of the given profiles dir
         Args:
          profiles_dir: where is the profile?

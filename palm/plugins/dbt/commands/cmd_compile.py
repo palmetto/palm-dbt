@@ -1,5 +1,5 @@
 import click
-from typing import Optional
+from typing import Optional, Tuple
 from palm.plugins.dbt.dbt_palm_utils import dbt_env_vars
 
 
@@ -7,7 +7,7 @@ from palm.plugins.dbt.dbt_palm_utils import dbt_env_vars
 @click.option("--models", multiple=True, help="see dbt docs on models flag")
 @click.option("--fast", is_flag=True, help="will skip clean/deps/seed")
 @click.pass_context
-def cli(ctx, fast: bool, models: Optional[tuple] = tuple()):
+def cli(ctx, fast: bool, models: Optional[Tuple] = tuple()):
     """Cleans up target directory and dependencies, then compiles dbt"""
 
     if fast:

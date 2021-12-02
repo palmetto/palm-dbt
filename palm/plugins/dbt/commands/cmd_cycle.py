@@ -1,5 +1,5 @@
 import click
-from typing import Optional
+from typing import Optional, Tuple
 from palm.plugins.dbt.dbt_palm_utils import dbt_env_vars
 
 # TODO: Refactor this command to reduce branching logic and simply join a list of
@@ -22,8 +22,8 @@ def cli(
     fast: bool,
     persist: bool,
     no_seed: bool,
-    models: Optional[tuple] = tuple(),
-    select: Optional[tuple] = tuple(),
+    models: Optional[Tuple] = tuple(),
+    select: Optional[Tuple] = tuple(),
 ):
     """Consecutive run-test of the DBT repo. `count` is the number of run/test cycles to execute, defaults to 2"""
 
