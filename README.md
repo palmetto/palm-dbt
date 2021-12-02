@@ -28,11 +28,10 @@ plugins:
 ## Palm-ing an existing dbt project
 palm-dbt ships with a command to containerize and convert your existing dbt project.
 
+For example, if you wanted to containerize your existing dbt project running on 0.21.0, you would run:
 ```
-  palm containerize
+  palm containerize --version 0.21.0
 ```
-
-Follow the prompts to select a dbt version and you will be ready to use this package. 
 
 ### Adding palm dbt macros
 
