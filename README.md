@@ -32,7 +32,10 @@ palm-dbt ships with a command to containerize and convert your existing dbt proj
   palm containerize
 ```
 
-Follow the prompts to select a dbt version and you will be ready to use this package. 
+## Check dbt plugin version
+
+Check the version of palm-dbt inside a project in which you have configured palm with the dbt plugin:
+`palm plugin versions`
 
 ### Adding palm dbt macros
 
