@@ -25,6 +25,15 @@ plugins:
   - dbt
 ```
 
+## Palm-ing an existing dbt project
+palm-dbt ships with a command to containerize and convert your existing dbt project.
+
+```
+  palm containerize
+```
+
+Follow the prompts to select a dbt version and you will be ready to use this package. 
+
 ### Adding palm dbt macros
 
 palm-dbt uses the git branch name to set the schema for all commands via env vars.

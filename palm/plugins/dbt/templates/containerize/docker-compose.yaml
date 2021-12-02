@@ -1,0 +1,16 @@
+version: "3.5"
+services:
+  {{project_name}}:
+    image: {{project_name}}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/app
+    {% if profile_volume_mount %}
+      - {{ profile_volume_mount }}
+    {% endif %}
+    env_file:
+      - .env
+    ports: 
+      - "8080:8080"

@@ -1,0 +1,11 @@
+#! /bin/bash -x
+# Entrypoint script for docker
+{% if package_manager == 'poetry' %}
+pip3 install poetry
+poetry config virtualenvs.create false
+poetry install
+{% endif %}
+{% if package_manager == 'pip3' %}
+pip3 install -r requirements.txt
+pip3 install pytest
+{% endif %}
