@@ -21,7 +21,7 @@ long_description = Path(this_directory, 'README.md').read_text()
 
 setup(
     name='palm-dbt',
-    version='0.0.4',
+    version='0.1.0',
     description='dbt extension for Palm CLI',
     long_description=long_description,
     long_description_content_type='text/markdown',
