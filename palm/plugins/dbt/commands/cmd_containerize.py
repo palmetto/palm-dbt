@@ -6,7 +6,9 @@ from palm.plugins.dbt.dbt_containerizer import DbtContainerizer
 
 @click.command("containerize")
 @click.option(
-    "--version", multiple=False, help="dbt version to use (e.g. 0.21.0)",
+    "--version",
+    multiple=False,
+    help="dbt version to use (e.g. 0.21.0)",
 )
 @click.pass_context
 def cli(ctx, version: Optional[str]):
