@@ -1,5 +1,4 @@
 FROM fishtownanalytics/dbt:{{dbt_version}}
-COPY profiles.yml /root/.dbt/
 COPY . /app/
 WORKDIR /app
 ENV PYTHONPATH=${PYTHONPATH}:${PWD}

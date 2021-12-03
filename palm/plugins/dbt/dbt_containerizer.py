@@ -123,7 +123,8 @@ class DbtContainerizer(PythonContainerizer):
            the host and container volume mount values
         """
         container_default = "/root/.dbt"
-        if profile_path := os.getenv("DBT_PROFILES_DIR"):
+        profile_path = os.getenv("DBT_PROFILES_DIR", None)
+        if profile_path:
             profiles_dir = Path(profile_path)
             if not profiles_dir.exists():
                 raise AbortPalm("Your host has a non-existant DBT_PROFILES_DIR value!")
