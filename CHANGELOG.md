@@ -1,5 +1,14 @@
 # Palm dbt Changelog
 
+## 0.1.2
+Features:
+- **Containerize**: There is an explicit prompt to enter the dbt version number when containerizing a dbt project. Issue #34
+
+Improvements:
+- **Bug Fixes**: Removed profiles.yml reference in Dockerfile template. Palm-dbt detects profiles.yml automatically. 
+- **General**: Improved testing, documentation, CI, issue templates, and linting.
+
+
 ## 0.1.1
 
 > 12/02/2021
