@@ -53,12 +53,15 @@ def _long_cycle(
     no_fail_fast: Optional[bool] = False,
     full_refresh: Optional[bool] = False,
     no_seed: Optional[bool] = False,
+    deps: Optional[bool] = False,
     select: Optional[Tuple] = (),
     models: Optional[Tuple] = (),
     macros: Optional[Tuple] = (),
 ) -> str:
-    seed_cmd = "" if no_seed else "&& dbt seed --full-refresh"
-    command = f"dbt clean && dbt deps {seed_cmd}"
+    command = "" if no_seed else "&& dbt seed --full-refresh"
+    
+    if deps:
+        command = f'dbt clean && dbt deps && {command}'
 
     if macros:
         run_operation = " && dbt run-operation "

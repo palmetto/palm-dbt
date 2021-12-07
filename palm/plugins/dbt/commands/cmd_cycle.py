@@ -15,6 +15,7 @@ from palm.plugins.dbt.dbt_palm_utils import dbt_env_vars
 @click.option("--models", multiple=True, help="see dbt docs on models flag")
 @click.option("--select", multiple=True, help="see dbt docs on select flag")
 @click.option("--no-seed", is_flag=True, help="will skip seed full refresh")
+@click.option("--deps", is_flag=True, help="clean and install dependencies")
 @click.pass_context
 def cli(
     ctx,
@@ -22,6 +23,7 @@ def cli(
     fast: bool,
     persist: bool,
     no_seed: bool,
+    deps: bool,
     models: Optional[Tuple] = tuple(),
     select: Optional[Tuple] = tuple(),
 ):
@@ -53,22 +55,17 @@ def cli(
         )
 
     def make_cmd():
-        if fast:
-            if no_seed:
-                seed_cmd = ""
-            else:
-                seed_cmd = "dbt seed --full-refresh"
-            commands = [add_select(seed_cmd), run_test(), add_persist()]
-        else:
-            if no_seed:
-                seed_cmd = ""
-            else:
-                seed_cmd = " && dbt seed --full-refresh "
-            commands = [
-                add_select("dbt clean && dbt deps" + seed_cmd),
-                run_test(),
-                add_persist(),
-            ]
+        commands = []
+        if not fast or deps:
+            commands.append("dbt clean && dbt deps")
+
+        if not no_seed:
+            seed_cmd = "dbt seed --full-refresh"
+            commands.append(add_select(seed_cmd))
+        
+        commands.append(run_test())
+        commands.append(add_persist()())
+        
         return " && ".join(list(filter(None, commands)))
 
     env_vars = dbt_env_vars(ctx.obj.palm.branch)
