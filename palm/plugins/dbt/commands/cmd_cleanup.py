@@ -5,15 +5,11 @@ from palm.plugins.dbt.dbt_palm_utils import dbt_env_vars
 
 
 @click.command("cleanup")
-@click.option("--deps", is_flag=True, help="Will clean and install dependencies")
 @click.pass_context
-def cli(ctx, deps: bool):
+def cli(ctx):
     """Removes any artifacts from Snowflake related to the current branch."""
 
-    if deps:
-        cmd = "dbt clean && dbt deps && dbt run-operation drop_branch_schemas"
-    else:
-        cmd = "dbt run-operation drop_branch_schemas"
+    cmd = "dbt run-operation drop_branch_schemas"
     env_vars = dbt_env_vars(ctx.obj.palm.branch)
     success, msg = ctx.obj.run_in_docker(cmd, env_vars)
     click.secho(msg, fg="green" if success else "red")

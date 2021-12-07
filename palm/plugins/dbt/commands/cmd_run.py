@@ -4,7 +4,6 @@ from palm.plugins.dbt.dbt_palm_utils import shell_options, dbt_env_vars
 
 
 @click.command("run")
-@click.option("--fast", is_flag=True, help="will skip clean/deps/seed")
 @click.option(
     "--no-fail-fast",
     is_flag=True,
@@ -24,16 +23,13 @@ from palm.plugins.dbt.dbt_palm_utils import shell_options, dbt_env_vars
     help="will perform a full refresh on incremental models",
 )
 @click.option("--no-seed", is_flag=True, help="will skip seed full refresh")
-@click.option("--deps", is_flag=True, help="will run clean and deps")
 @click.pass_context
 def cli(
     ctx,
-    fast: bool,
     no_fail_fast: bool,
     persist: bool,
     full_refresh: bool,
     no_seed: bool,
-    deps: bool,
     models: Optional[Tuple] = tuple(),
     select: Optional[Tuple] = tuple(),
     macros: Optional[Tuple] = tuple(),

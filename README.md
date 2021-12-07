@@ -103,7 +103,7 @@ for the same developer (like during hotfixes).
 From a non-protected branch, running `palm run` will:
 1. drop (if it exists) the namespaced schema in development
 2. create the namespaced schema in development
-3. clean, deps, seed and run
+3. seed and run
 4. drop the namespaced schema in development
 
 Why drop it? so your testing is atomic. 

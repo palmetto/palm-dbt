@@ -9,78 +9,40 @@ def shell_options(command_name: str, **kwargs):
     # pop off unused kwargs caused by use of importlib in palm
     kwargs.pop("ctx")
 
-    if kwargs["fast"]:
-        for k in ("fast", "select"):
-            kwargs.pop(k, None)
-        return _short_cycle(command_name, **kwargs)
-        return
-    kwargs.pop("fast")
-    return _long_cycle(command_name, **kwargs)
+    return _cycle(command_name, **kwargs)
 
-
-def _short_cycle(
+def _cycle(
     cmd: str,
     persist: Optional[bool] = False,
     no_fail_fast: Optional[bool] = False,
     full_refresh: Optional[bool] = False,
     no_seed: Optional[bool] = False,
-    models: Optional[Tuple] = (),
-    macros: Optional[Tuple] = (),
-) -> str:
-
-    command = "" if no_seed else f" dbt seed --full-refresh && "
-
-    if macros:
-        command += f"dbt run-operation {macros}"
-    else:
-        command += f"dbt {cmd}"
-        if models:
-            command += " --models " + " ".join(models)
-        if full_refresh:
-            command += " --full-refresh"
-        if not no_fail_fast:
-            command += " --fail-fast"
-
-    if not persist:
-        command += " && dbt run-operation drop_branch_schemas"
-
-    return command
-
-
-def _long_cycle(
-    cmd: str,
-    persist: Optional[bool] = False,
-    no_fail_fast: Optional[bool] = False,
-    full_refresh: Optional[bool] = False,
-    no_seed: Optional[bool] = False,
-    deps: Optional[bool] = False,
     select: Optional[Tuple] = (),
     models: Optional[Tuple] = (),
     macros: Optional[Tuple] = (),
 ) -> str:
-    command = "" if no_seed else "&& dbt seed --full-refresh"
-    
-    if deps:
-        command = f'dbt clean && dbt deps && {command}'
+    command = []
+    if not no_seed:
+        command.append("dbt seed --full-refresh")
 
     if macros:
-        run_operation = " && dbt run-operation "
-        command += run_operation + run_operation.join(macros)
+        command.append(f'dbt run-operation + {"&& dbt run-operation".join(macros)}')
     else:
-        command += f" && dbt {cmd}"
+        subcommand = f"dbt {cmd}"
         if select and not no_seed:
-            command += " --select " + " ".join(select)
+            subcommand += " --select " + " ".join(select)
         if models:
-            command += " --models " + " ".join(models)
+            subcommand += " --models " + " ".join(models)
         if full_refresh:
-            command += " --full-refresh"
+            subcommand += " --full-refresh"
         if not no_fail_fast:
-            command += " --fail-fast"
+            subcommand += " --fail-fast"
+        command.append(subcommand)
 
     if not persist:
-        command += " && dbt run-operation drop_branch_schemas"
+        command.append("dbt run-operation drop_branch_schemas")
 
-    return command
+    return ' && '.join(command)
 
 
 def dbt_env_vars(branch: str) -> Dict:
