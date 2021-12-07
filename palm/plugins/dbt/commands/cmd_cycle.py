@@ -64,8 +64,8 @@ def cli(
             commands.append(add_select(seed_cmd))
         
         commands.append(run_test())
-        commands.append(add_persist()())
-        
+        commands.append(add_persist())
+
         return " && ".join(list(filter(None, commands)))
 
     env_vars = dbt_env_vars(ctx.obj.palm.branch)
