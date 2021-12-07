@@ -55,7 +55,7 @@ def cli(
         if not no_seed:
             seed_cmd = "dbt seed --full-refresh"
             commands.append(add_select(seed_cmd))
-        
+
         commands.append(run_test())
         commands.append(add_persist())
 

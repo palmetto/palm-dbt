@@ -11,6 +11,7 @@ def shell_options(command_name: str, **kwargs):
 
     return _cycle(command_name, **kwargs)
 
+
 def _cycle(
     cmd: str,
     persist: Optional[bool] = False,
