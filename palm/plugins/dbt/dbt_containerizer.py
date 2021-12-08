@@ -124,7 +124,10 @@ class DbtContainerizer(PythonContainerizer):
         return deps_dir
         
     def dbt_project_config(self) -> dict:
-        return yaml.safe_load(Path("dbt_project.yml").read_text())
+        config_path = Path("dbt_project.yml")
+        if config_path.exists():
+            return yaml.safe_load(config_path.read_text())
+        return {}
 
     @classmethod
     def determine_profile_strategy(cls, project_path: "Path") -> Tuple[str, str]:
