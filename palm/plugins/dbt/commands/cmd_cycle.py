@@ -37,8 +37,8 @@ def cli(
 
     def add_persist() -> str:
         if not persist:
-            return " dbt run-operation drop_branch_schemas"
-        return " true "
+            return "dbt run-operation drop_branch_schemas"
+        return ""
 
     def run_test():
 
