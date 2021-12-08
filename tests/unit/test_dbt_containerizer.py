@@ -1,5 +1,6 @@
 import os
 import pytest
+import yaml
 from unittest import mock
 from pathlib import Path
 from palm.plugins.dbt.dbt_containerizer import DbtContainerizer
@@ -144,3 +145,45 @@ def test_profile_strategy_none(tmpdir, monkeypatch):
             None,
             None,
         )
+
+def test_dbt_project_config(tmpdir, environment):
+    dbt_config = {"name": 'test_project'}
+    with open(tmpdir / 'dbt_project.yml', 'w') as f:
+        f.write(yaml.dump(dbt_config))
+    os.chdir(tmpdir)
+
+    templates_dir = (
+        Path(__file__).parents[2] / 'palm/plugins/dbt/templates/containerize'
+    )
+    ctx = MockContext(obj=environment)
+    c = DbtContainerizer(ctx, templates_dir)
+
+    assert c.dbt_project_config() == dbt_config
+
+def test_dbt_packages_dir(tmpdir, environment):
+    dbt_config = {"name": 'test_project'}
+    with open(tmpdir / 'dbt_project.yml', 'w') as f:
+        f.write(yaml.dump(dbt_config))
+    os.chdir(tmpdir)
+    
+    templates_dir = (
+        Path(__file__).parents[2] / 'palm/plugins/dbt/templates/containerize'
+    )
+    ctx = MockContext(obj=environment)
+    c = DbtContainerizer(ctx, templates_dir)
+
+    # default value
+    assert c.get_packages_dir() == 'dbt_modules'
+
+    # modules-path config
+    dbt_config['modules-path'] = 'custom_modules_path'
+    with open(tmpdir / 'dbt_project.yml', 'w') as f:
+        f.write(yaml.dump(dbt_config))
+    assert c.get_packages_dir() == 'custom_modules_path'
+    dbt_config.pop('modules-path')
+
+    # package-install-path config (dbt v1.x)
+    dbt_config['packages-install-path'] = 'custom_packages_path'
+    with open(tmpdir / 'dbt_project.yml', 'w') as f:
+        f.write(yaml.dump(dbt_config))
+    assert c.get_packages_dir() == 'custom_packages_path'

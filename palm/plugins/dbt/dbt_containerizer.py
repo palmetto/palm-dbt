@@ -4,6 +4,7 @@ from typing import Optional, Tuple, Dict
 from palm.containerizer import PythonContainerizer
 from palm.palm_exceptions import AbortPalm
 import click
+import yaml
 
 
 class DbtContainerizer(PythonContainerizer):
@@ -88,6 +89,7 @@ class DbtContainerizer(PythonContainerizer):
                 "project_name": self.project_name,
                 "package_manager": self.package_manager,
                 "dbt_version": self.dbt_version,
+                "packages_dir": self.get_packages_dir(),
             }
         )
         return replacements
@@ -111,6 +113,18 @@ class DbtContainerizer(PythonContainerizer):
                     f"DBT_PROFILES_DIR={self.profile_volume_path}"
                 )
             )
+
+    def get_packages_dir(self) -> str:
+        deps_dir = "dbt_modules"
+        dbt_confg = self.dbt_project_config()
+        if dbt_confg.get('modules-path'):
+            deps_dir = dbt_confg['modules-path']
+        if dbt_confg.get('packages-install-path'):
+            deps_dir = dbt_confg['packages-install-path']
+        return deps_dir
+        
+    def dbt_project_config(self) -> dict:
+        return yaml.safe_load(Path("dbt_project.yml").read_text())
 
     @classmethod
     def determine_profile_strategy(cls, project_path: "Path") -> Tuple[str, str]:
