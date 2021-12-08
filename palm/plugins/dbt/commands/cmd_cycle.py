@@ -35,13 +35,7 @@ def cli(
             command += " --select " + " ".join(select)
         return command
 
-    def add_persist() -> str:
-        if not persist:
-            return "dbt run-operation drop_branch_schemas"
-        return ""
-
     def run_test():
-
         return " && ".join(
             (
                 add_models("dbt run"),
@@ -57,7 +51,9 @@ def cli(
             commands.append(add_select(seed_cmd))
 
         commands.append(run_test())
-        commands.append(add_persist())
+
+        if not persist:
+            commands.append("dbt run-operation drop_branch_schemas")
 
         return " && ".join(list(filter(None, commands)))
 
