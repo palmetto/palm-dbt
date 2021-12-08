@@ -122,7 +122,7 @@ class DbtContainerizer(PythonContainerizer):
         if dbt_confg.get('packages-install-path'):
             deps_dir = dbt_confg['packages-install-path']
         return deps_dir
-        
+
     def dbt_project_config(self) -> dict:
         config_path = Path("dbt_project.yml")
         if config_path.exists():

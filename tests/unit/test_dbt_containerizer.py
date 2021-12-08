@@ -146,6 +146,7 @@ def test_profile_strategy_none(tmpdir, monkeypatch):
             None,
         )
 
+
 def test_dbt_project_config(tmpdir, environment):
     dbt_config = {"name": 'test_project'}
     with open(tmpdir / 'dbt_project.yml', 'w') as f:
@@ -160,12 +161,13 @@ def test_dbt_project_config(tmpdir, environment):
 
     assert c.dbt_project_config() == dbt_config
 
+
 def test_dbt_packages_dir(tmpdir, environment):
     dbt_config = {"name": 'test_project'}
     with open(tmpdir / 'dbt_project.yml', 'w') as f:
         f.write(yaml.dump(dbt_config))
     os.chdir(tmpdir)
-    
+
     templates_dir = (
         Path(__file__).parents[2] / 'palm/plugins/dbt/templates/containerize'
     )
