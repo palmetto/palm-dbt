@@ -36,3 +36,4 @@ jobs:
       - uses: psf/black@stable
         with:
           options: '--check --diff --skip-string-normalization --exclude="\.tpl\.py"'
+          version: '21.12b0'
