@@ -189,3 +189,31 @@ def test_dbt_packages_dir(tmpdir, environment):
     with open(tmpdir / 'dbt_project.yml', 'w') as f:
         f.write(yaml.dump(dbt_config))
     assert c.get_packages_dir() == 'custom_packages_path'
+
+# v1.0 support - Note that we are not currently supporting v1.0 but these tests
+# are here to document where we are building in support for v1.0 changes
+
+def test_is_dbt_v1(environment):
+    ctx = MockContext(obj=environment)
+    c = DbtContainerizer(ctx, Path('.'))
+
+    # Default is not v1.0 (yet)
+    assert not c.is_dbt_v1
+
+    # True if dbt_version is passed as v1.0.x
+    c = DbtContainerizer(ctx, Path('.'), '1.0.0')
+    assert c.is_dbt_v1
+
+def test_dbt_packages_dir_supports_v1(tmpdir, environment):
+    dbt_config = {"name": 'test_project'}
+    with open(tmpdir / 'dbt_project.yml', 'w') as f:
+        f.write(yaml.dump(dbt_config))
+    os.chdir(tmpdir)
+
+    templates_dir = (
+        Path(__file__).parents[2] / 'palm/plugins/dbt/templates/containerize'
+    )
+    ctx = MockContext(obj=environment)
+    # dbt v1 default value
+    c = DbtContainerizer(ctx, templates_dir, '1.0.0')
+    assert c.get_packages_dir() == 'dbt_packages'

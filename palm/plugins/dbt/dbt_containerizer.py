@@ -68,6 +68,11 @@ class DbtContainerizer(PythonContainerizer):
         return (True, f'{self.dbt_version} is valid')
 
     @property
+    def is_dbt_v1(self) -> bool:
+        """Returns True if dbt version is 1.x.x"""
+        return self.dbt_version.split(".")[0] == '1'
+
+    @property
     def replacements(self) -> Dict:
         """
         Return a dictionary of replacements for the dbt template.
@@ -115,7 +120,7 @@ class DbtContainerizer(PythonContainerizer):
             )
 
     def get_packages_dir(self) -> str:
-        deps_dir = "dbt_modules"
+        deps_dir = "dbt_packages" if self.is_dbt_v1 else "dbt_modules"
         dbt_confg = self.dbt_project_config()
         if dbt_confg.get('modules-path'):
             deps_dir = dbt_confg['modules-path']
