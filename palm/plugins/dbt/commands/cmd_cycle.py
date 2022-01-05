@@ -8,7 +8,6 @@ from palm.plugins.dbt.dbt_palm_utils import dbt_env_vars
 
 @click.command("cycle")
 @click.argument("count", type=int, default=2)
-@click.option("--fast", is_flag=True, help="will skip clean/deps/seed")
 @click.option(
     "--persist", is_flag=True, help="will not drop the test schema at the end"
 )
@@ -19,7 +18,6 @@ from palm.plugins.dbt.dbt_palm_utils import dbt_env_vars
 def cli(
     ctx,
     count: int,
-    fast: bool,
     persist: bool,
     no_seed: bool,
     models: Optional[Tuple] = tuple(),
@@ -37,13 +35,7 @@ def cli(
             command += " --select " + " ".join(select)
         return command
 
-    def add_persist() -> str:
-        if not persist:
-            return " dbt run-operation drop_branch_schemas"
-        return " true "
-
     def run_test():
-
         return " && ".join(
             (
                 add_models("dbt run"),
@@ -53,22 +45,16 @@ def cli(
         )
 
     def make_cmd():
-        if fast:
-            if no_seed:
-                seed_cmd = ""
-            else:
-                seed_cmd = "dbt seed --full-refresh"
-            commands = [add_select(seed_cmd), run_test(), add_persist()]
-        else:
-            if no_seed:
-                seed_cmd = ""
-            else:
-                seed_cmd = " && dbt seed --full-refresh "
-            commands = [
-                add_select("dbt clean && dbt deps" + seed_cmd),
-                run_test(),
-                add_persist(),
-            ]
+        commands = []
+        if not no_seed:
+            seed_cmd = "dbt seed --full-refresh"
+            commands.append(add_select(seed_cmd))
+
+        commands.append(run_test())
+
+        if not persist:
+            commands.append("dbt run-operation drop_branch_schemas")
+
         return " && ".join(list(filter(None, commands)))
 
     env_vars = dbt_env_vars(ctx.obj.palm.branch)

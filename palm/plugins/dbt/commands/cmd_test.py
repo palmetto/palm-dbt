@@ -4,7 +4,6 @@ from palm.plugins.dbt.dbt_palm_utils import shell_options, dbt_env_vars
 
 
 @click.command('test')
-@click.option("--fast", is_flag=True, help="will skip clean/deps/seed")
 @click.option(
     "--persist", is_flag=True, help="will not drop the test schema at the end"
 )
@@ -15,7 +14,6 @@ from palm.plugins.dbt.dbt_palm_utils import shell_options, dbt_env_vars
 @click.pass_context
 def cli(
     ctx,
-    fast: bool,
     persist: bool,
     no_seed: bool,
     no_fail_fast: bool,
