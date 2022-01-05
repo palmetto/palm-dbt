@@ -4,6 +4,7 @@ from typing import Optional, Tuple, Dict
 from palm.containerizer import PythonContainerizer
 from palm.palm_exceptions import AbortPalm
 import click
+import yaml
 
 
 class DbtContainerizer(PythonContainerizer):
@@ -67,6 +68,11 @@ class DbtContainerizer(PythonContainerizer):
         return (True, f'{self.dbt_version} is valid')
 
     @property
+    def is_dbt_v1(self) -> bool:
+        """Returns True if dbt version is 1.x.x"""
+        return self.dbt_version.split(".")[0] == '1'
+
+    @property
     def replacements(self) -> Dict:
         """
         Return a dictionary of replacements for the dbt template.
@@ -88,6 +94,7 @@ class DbtContainerizer(PythonContainerizer):
                 "project_name": self.project_name,
                 "package_manager": self.package_manager,
                 "dbt_version": self.dbt_version,
+                "packages_dir": self.get_packages_dir(),
             }
         )
         return replacements
@@ -111,6 +118,21 @@ class DbtContainerizer(PythonContainerizer):
                     f"DBT_PROFILES_DIR={self.profile_volume_path}"
                 )
             )
+
+    def get_packages_dir(self) -> str:
+        deps_dir = "dbt_packages" if self.is_dbt_v1 else "dbt_modules"
+        dbt_confg = self.dbt_project_config()
+        if dbt_confg.get('modules-path'):
+            deps_dir = dbt_confg['modules-path']
+        if dbt_confg.get('packages-install-path'):
+            deps_dir = dbt_confg['packages-install-path']
+        return deps_dir
+
+    def dbt_project_config(self) -> dict:
+        config_path = Path("dbt_project.yml")
+        if config_path.exists():
+            return yaml.safe_load(config_path.read_text())
+        return {}
 
     @classmethod
     def determine_profile_strategy(cls, project_path: "Path") -> Tuple[str, str]:

@@ -1,5 +1,19 @@
 # Palm dbt Changelog
 
+## 0.2.0
+
+> 01/05/2022
+
+Features:
+- **dbt deps**: palm-dbt now assumes dbt deps are installed when the docker image is built.
+Projects containerized by palm-dbt will be set up with this functionality, other projects
+may need to adjust their Dockerfile to RUN dbt deps and implement the volume mount
+in their docker-compose.yaml. See README for full details.
+
+Developer Improvement
+- **pin version of black**: The version of black used to lint this project has been
+pinned to ensure the local version matches the version used in CI
+
 ## 0.1.2
 Features:
 - **Containerize**: There is an explicit prompt to enter the dbt version number when containerizing a dbt project. Issue #34

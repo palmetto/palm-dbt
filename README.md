@@ -25,18 +25,20 @@ plugins:
   - dbt
 ```
 
-## Palm-ing an existing dbt project
-palm-dbt ships with a command to containerize and convert your existing dbt project.
-
-For example, if you wanted to containerize your existing dbt project running on 0.21.0, you would run:
-```
-  palm containerize --version 0.21.0
-```
-
 ## Check dbt plugin version
 
 Check the version of palm-dbt inside a project in which you have configured palm with the dbt plugin:
 `palm plugin versions`
+
+## Palm-ing an existing dbt project
+
+palm-dbt ships with a command to containerize and convert your existing dbt project.
+
+For example, if you wanted to containerize your existing dbt project running on 0.21.0, you would run:
+
+```
+  palm containerize --version 0.21.0
+```
 
 ### Adding palm dbt macros
 
@@ -98,12 +100,37 @@ Refs will automatically update as well. This way, you can use a single test
 database and not worry about conflicts between developers, or between branches 
 for the same developer (like during hotfixes). 
 
+## palm-dbt and dbt deps
+
+In palm-dbt we have determined that running `dbt deps` before every command is
+problematic for a few reasons:
+
+1. It takes time, slowing down development, CI, and every production run.
+2. If dbt hub or github have an outage, our dbt commands fail and remain broken
+until the upstream error is resolved
+3. If you forget to run dbt deps, the resulting error messages can be quite confusing.
+
+To solve these problems, we have decided that running `dbt clean && dbt deps` should
+happen in the Dockerfile, when the image is being built.
+
+To support this decision your project _must_ do the following:
+
+1. Include `RUN dbt clean && dbt deps` in the Dockerfile
+2. Include a `volume` entry in the docker-compose.yaml for the dbt_modules directory
+like this `- /app/{{packages_dir}}`, which will prevent the `.:./app` volume from
+blowing away the deps generated when the image was built.
+
+_if you use `palm containerize` this will be done for you!_
+
+Additionally, if you need to make changes to your deps you should use `palm build`
+to rebuild the image, which will update your deps!
+
 ## Typical palm-dbt workflow
 
 From a non-protected branch, running `palm run` will:
 1. drop (if it exists) the namespaced schema in development
 2. create the namespaced schema in development
-3. clean, deps, seed and run
+3. seed and run
 4. drop the namespaced schema in development
 
 Why drop it? so your testing is atomic. 
