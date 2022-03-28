@@ -3,6 +3,8 @@ import pytest
 import yaml
 from unittest import mock
 from pathlib import Path
+import pygit2
+import shutil
 from palm.plugins.dbt.dbt_containerizer import DbtContainerizer
 from palm.environment import Environment
 from palm.plugin_manager import PluginManager
@@ -14,8 +16,32 @@ class MockContext:
         self.__dict__.update(kwargs)
 
 
+def mock_repository(tmp_path):
+    class TemporaryRepository:
+        def __init__(self, name, tmp_path):
+            self.name = name
+            self.tmp_path = tmp_path
+
+        def __enter__(self):
+            path = Path(__file__).parent / 'data' / self.name
+            temp_repo_path = Path(self.tmp_path) / path.stem
+            if path.suffix == '.git':
+                shutil.copytree(path, temp_repo_path)
+            else:
+                raise ValueError(f'Unexpected {path.suffix} extension')
+
+            return temp_repo_path
+
+        def __exit__(self, exc_type, exc_value, traceback):
+            pass
+
+    with TemporaryRepository('testrepo.git', tmp_path) as path:
+        yield pygit2.Repository(path)
+
+
 @pytest.fixture
 def environment(tmp_path, monkeypatch):
+    monkeypatch.setattr(PalmConfig, '_get_repo', mock_repository)
     monkeypatch.setattr(PalmConfig, '_get_current_branch', lambda x: 'master')
     pm = PluginManager()
     config = PalmConfig(Path(tmp_path))
