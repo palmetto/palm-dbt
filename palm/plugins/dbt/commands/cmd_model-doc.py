@@ -6,6 +6,7 @@ from pathlib import Path
 from functools import lru_cache
 from typing import List
 
+
 @click.command("model-doc")
 @click.argument("model", required=True, type=click.Path(exists=True))
 @click.pass_obj
@@ -15,6 +16,7 @@ def cli(environment, model):
     model_name = model_path.stem
     generate_model_md_file(environment, model_path, model_name)
     generate_yml_file(model_path, model_name)
+
 
 def generate_model_md_file(environment, model_path: Path, model_name: str) -> Path:
     """Generate the model markdown file
@@ -31,22 +33,25 @@ def generate_model_md_file(environment, model_path: Path, model_name: str) -> Pa
     click.echo(click.style(f"Generating model.md in {destination}", fg="green"))
 
     grain = click.prompt("What is the grain of the model?", type=str)
-    description = click.prompt("Please provide a user-facing description for this model", type=str)
+    description = click.prompt(
+        "Please provide a user-facing description for this model", type=str
+    )
     replacements = {
         "model_name": model_name,
         "model_name_humanized": model_name.replace("_", " ").title(),
         "grain": grain,
         "description": description,
         "begin_docs": f"{{% docs {model_name} %}}",
-        "end_docs": "{% enddocs %}"
+        "end_docs": "{% enddocs %}",
     }
     template_dir = Path(Path(__file__).parents[1], "templates") / "model_docs"
     environment.generate(template_dir, destination, replacements)
     return destination / f"{model_name}.md"
 
+
 def get_md_destination_directory(model_path: Path, model_name: str) -> Path:
     """Generate the destination for the models markdown file
-    
+
     Note that the model must have a parent directory that matches the name of
     and existing group of model docs.
     """
@@ -66,6 +71,7 @@ def get_md_destination_directory(model_path: Path, model_name: str) -> Path:
     destination = model_docs_path / model_type
     return destination
 
+
 def generate_yml_file(model_path: Path, model_name: str) -> Path:
     """Generate the model yml file"""
     click.echo(click.style(f"Generating model.yml for {model_name}", fg="green"))
@@ -79,16 +85,18 @@ def generate_yml_file(model_path: Path, model_name: str) -> Path:
 
     model = {
         "version": 2,
-        "models": [{
-            "name": model_name,
-            "description": f'{{{{ doc("{model_name}") }}}}',
-            "columns": get_model_columns(model_path)
-        }]
+        "models": [
+            {
+                "name": model_name,
+                "description": f'{{{{ doc("{model_name}") }}}}',
+                "columns": get_model_columns(model_path),
+            }
+        ],
     }
     destination.write_text(yaml.dump(model, sort_keys=False, default_flow_style=False))
     click.echo(click.style(f"Model.yml generated at {destination}", fg="green"))
     return destination
-       
+
 
 def get_model_columns(model_path: Path) -> List[str]:
     """Parse the model SQL file and return a list of columns names
@@ -100,37 +108,46 @@ def get_model_columns(model_path: Path) -> List[str]:
         List[str]: List of column names
     """
     raw = Path(model_path).read_text()
-    raw = re.sub(r"{{[A-Za-z\\n\s()=_,]+}}", "", raw).strip() # Strip out jinja config blocks
+    raw = re.sub(
+        r"{{[A-Za-z\\n\s()=_,]+}}", "", raw
+    ).strip()  # Strip out jinja config blocks
     parsed = sqlparse.parse(raw)
 
     column_identifiers = []
-    
+
     for statement in parsed:
         # Unknown is acceptable here because dbt models aren't always proper SQL
-        if statement.get_type() in ["SELECT", "UNKNOWN"]: 
+        if statement.get_type() in ["SELECT", "UNKNOWN"]:
             column_identifiers = get_column_identifiers(statement)
-    
+
     column_names = get_column_names(column_identifiers)
     columns = create_column_list(column_names)
     return columns
 
-def get_column_identifiers(statement: sqlparse.sql.Statement) -> List[sqlparse.sql.Identifier]:
+
+def get_column_identifiers(
+    statement: sqlparse.sql.Statement,
+) -> List[sqlparse.sql.Identifier]:
     """Get the column identifiers from a SQL statement"""
     identifiers = []
     for token in statement.tokens:
-        if token.ttype is None and type(token) is not sqlparse.sql.Function:         
+        if token.ttype is None and type(token) is not sqlparse.sql.Function:
             if type(token) is sqlparse.sql.Identifier:
                 # If the token is a CTE, skip it
                 if not token_is_cte(token):
                     identifiers.append(token)
             elif type(token) is sqlparse.sql.IdentifierList:
                 for child_token in token.get_identifiers():
-                    if child_token.ttype is not sqlparse.tokens.Keyword and not token_is_cte(child_token):
+                    if (
+                        child_token.ttype is not sqlparse.tokens.Keyword
+                        and not token_is_cte(child_token)
+                    ):
                         identifiers.append(child_token)
 
     if len(identifiers) == 0:
         raise Exception("Could not find column identifiers")
     return identifiers
+
 
 def token_is_cte(token: sqlparse.sql.Token) -> bool:
     """Check if a given token is a CTE name so we can skip documenting it.
@@ -143,6 +160,7 @@ def token_is_cte(token: sqlparse.sql.Token) -> bool:
     """
     _, foo = token.token_next(1)
     return foo and foo.value == "AS"
+
 
 def get_column_names(column_identifiers: List[sqlparse.sql.Identifier]) -> List[str]:
     """Get the column names from a list of identifiers
@@ -158,9 +176,11 @@ def get_column_names(column_identifiers: List[sqlparse.sql.Identifier]) -> List[
         columns.append(identifier.get_name())
     return columns
 
+
 def column_has_existing_doc(column_name: str) -> bool:
     """Check if a column has an existing doc"""
     return column_name in exisiting_column_docs()
+
 
 @lru_cache(maxsize=1)
 def exisiting_column_docs() -> List[str]:
@@ -175,9 +195,10 @@ def exisiting_column_docs() -> List[str]:
     column_doc_names = [column_doc.stem for column_doc in column_docs]
     return column_doc_names
 
+
 def create_column_list(column_names: List[str]) -> List[dict]:
     """Create a list of column dictionaries
-    
+
     Args:
         column_names (List[str]): List of column names
 
@@ -189,9 +210,6 @@ def create_column_list(column_names: List[str]) -> List[dict]:
         description = 'TODO: Add description'
         if column_has_existing_doc(col_name):
             description = f'{{{{ doc("{col_name}") }}}}'
-        col_dict = {
-            "name": col_name,
-            "description": description
-        }
+        col_dict = {"name": col_name, "description": description}
         columns.append(col_dict)
     return columns
