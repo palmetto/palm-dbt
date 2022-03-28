@@ -3,6 +3,7 @@ import pytest
 import yaml
 from unittest import mock
 from pathlib import Path
+import pygit2
 from palm.plugins.dbt.dbt_containerizer import DbtContainerizer
 from palm.environment import Environment
 from palm.plugin_manager import PluginManager
@@ -12,6 +13,7 @@ from palm.palm_config import PalmConfig
 class MockContext:
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
+
 
 def mock_repository(tmp_path):
     class TemporaryRepository:
@@ -34,6 +36,7 @@ def mock_repository(tmp_path):
 
     with TemporaryRepository('testrepo.git', tmp_path) as path:
         yield pygit2.Repository(path)
+
 
 @pytest.fixture
 def environment(tmp_path, monkeypatch):
