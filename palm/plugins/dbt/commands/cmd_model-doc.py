@@ -164,7 +164,13 @@ def column_has_existing_doc(column_name: str) -> bool:
 
 @lru_cache(maxsize=1)
 def exisiting_column_docs() -> List[str]:
-    """Get a list of existing column docs"""
+    """Get a list of existing column docs
+
+    Cached to prevent globbing the filesystem multiple times
+
+    Returns:
+        List[str]: List of existing column doc names
+    """
     column_docs = Path("models/documentation/columns").glob("*.md")
     column_doc_names = [column_doc.stem for column_doc in column_docs]
     return column_doc_names
