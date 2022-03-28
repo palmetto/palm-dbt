@@ -4,6 +4,7 @@ import yaml
 from unittest import mock
 from pathlib import Path
 import pygit2
+import shutil
 from palm.plugins.dbt.dbt_containerizer import DbtContainerizer
 from palm.environment import Environment
 from palm.plugin_manager import PluginManager
