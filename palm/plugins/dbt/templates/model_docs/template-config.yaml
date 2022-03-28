@@ -1,0 +1,2 @@
+files:
+  - model_doc.tpl.md: '{{ model_name }}.md'
