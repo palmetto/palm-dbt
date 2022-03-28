@@ -1,5 +1,6 @@
 import click
 import sqlparse
+import re
 import yaml
 from pathlib import Path
 from functools import lru_cache
@@ -99,12 +100,14 @@ def get_model_columns(model_path: Path) -> List[str]:
         List[str]: List of column names
     """
     raw = Path(model_path).read_text()
+    raw = re.sub(r"{{[A-Za-z\\n\s()=_,]+}}", "", raw).strip() # Strip out jinja config blocks
     parsed = sqlparse.parse(raw)
 
     column_identifiers = []
     
     for statement in parsed:
-        if statement.get_type() == "SELECT":
+        # Unknown is acceptable here because dbt models aren't always proper SQL
+        if statement.get_type() in ["SELECT", "UNKNOWN"]: 
             column_identifiers = get_column_identifiers(statement)
     
     column_names = get_column_names(column_identifiers)
@@ -115,14 +118,31 @@ def get_column_identifiers(statement: sqlparse.sql.Statement) -> List[sqlparse.s
     """Get the column identifiers from a SQL statement"""
     identifiers = []
     for token in statement.tokens:
-        if token.ttype is None and type(token) is not sqlparse.sql.Function:
+        if token.ttype is None and type(token) is not sqlparse.sql.Function:         
             if type(token) is sqlparse.sql.Identifier:
-                identifiers.append(token)
+                # If the token is a CTE, skip it
+                if not token_is_cte(token):
+                    identifiers.append(token)
             elif type(token) is sqlparse.sql.IdentifierList:
-                for identifier in token.get_identifiers():
-                    identifiers.append(identifier)
+                for child_token in token.get_identifiers():
+                    if child_token.ttype is not sqlparse.tokens.Keyword and not token_is_cte(child_token):
+                        identifiers.append(child_token)
 
+    if len(identifiers) == 0:
+        raise Exception("Could not find column identifiers")
     return identifiers
+
+def token_is_cte(token: sqlparse.sql.Token) -> bool:
+    """Check if a given token is a CTE name so we can skip documenting it.
+
+    Args:
+        token (sqlparse.sql.Token): The token to check
+
+    Returns:
+        bool: True if the token is a CTE name, False otherwise
+    """
+    _, foo = token.token_next(1)
+    return foo and foo.value == "AS"
 
 def get_column_names(column_identifiers: List[sqlparse.sql.Identifier]) -> List[str]:
     """Get the column names from a list of identifiers
