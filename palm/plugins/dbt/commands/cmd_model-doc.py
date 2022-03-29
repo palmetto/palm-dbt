@@ -158,8 +158,8 @@ def token_is_cte(token: sqlparse.sql.Token) -> bool:
     Returns:
         bool: True if the token is a CTE name, False otherwise
     """
-    _, foo = token.token_next(1)
-    return foo and foo.value == "AS"
+    _, next_token = token.token_next(1)
+    return next_token and next_token.value == "AS"
 
 
 def get_column_names(column_identifiers: List[sqlparse.sql.Identifier]) -> List[str]:
@@ -179,11 +179,11 @@ def get_column_names(column_identifiers: List[sqlparse.sql.Identifier]) -> List[
 
 def column_has_existing_doc(column_name: str) -> bool:
     """Check if a column has an existing doc"""
-    return column_name in exisiting_column_docs()
+    return column_name in existing_column_docs()
 
 
 @lru_cache(maxsize=1)
-def exisiting_column_docs() -> List[str]:
+def existing_column_docs() -> List[str]:
     """Get a list of existing column docs
 
     Cached to prevent globbing the filesystem multiple times
