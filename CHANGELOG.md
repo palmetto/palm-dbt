@@ -1,5 +1,15 @@
 # Palm dbt Changelog
 
+## 0.3.0
+
+> 05/10/2022
+
+Features:
+- **model-doc**: New command to auto-generate docs for a new model!
+Palm can now generate .yml and .md files based on the SQL in your model,
+to use palm model-doc run `palm model-doc models/path/to/model.sql` in your
+dbt project!
+
 ## 0.2.0
 
 > 01/05/2022
