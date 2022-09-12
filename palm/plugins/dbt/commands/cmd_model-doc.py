@@ -55,9 +55,12 @@ def get_md_destination_directory(model_path: Path, model_name: str) -> Path:
     Note that the model must have a parent directory that matches the name of
     and existing group of model docs.
     """
-    model_docs_path = Path("models/documentation/models")
+    # TODO: Implement dbt_project.yml parsing to get the docs directory (and other things)
+    # This should be read from dbt_project configuration
+    model_docs_path = Path("documentation/models")
     model_doc_types = [dir.stem for dir in model_docs_path.glob("*")]
     model_type = ''
+
     for part in model_path.parts:
         if part in model_doc_types:
             model_type = part
