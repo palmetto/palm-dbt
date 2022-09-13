@@ -50,6 +50,7 @@ def generate_model_md_file(environment, model_path: Path, model_name: str) -> Pa
     environment.generate(template_dir, destination, replacements)
     return destination / f"{model_name}.md"
 
+
 def _get_potential_model_doc_directories(model_path: Path) -> List[str]:
     """Infer potential model types from the path of the model
 
@@ -70,13 +71,20 @@ def _get_potential_model_doc_directories(model_path: Path) -> List[str]:
             model_doc_types = {dir.stem for dir in model_docs_path.glob("*")}
             model_type_matches = model_doc_types.intersection(model_path_dirs)
             if model_type_matches:
-                model_types.extend(list(map(lambda p: model_docs_path / p, model_type_matches)))
+                model_types.extend(
+                    list(map(lambda p: model_docs_path / p, model_type_matches))
+                )
         return model_types
 
     else:
         model_docs_path = Path("models/documentation")
         model_doc_types = {dir.stem for dir in model_docs_path.glob("*")}
-        return [model_docs_path / model_dir for model_dir in model_path_dirs if model_dir in model_doc_types]
+        return [
+            model_docs_path / model_dir
+            for model_dir in model_path_dirs
+            if model_dir in model_doc_types
+        ]
+
 
 def get_md_destination_directory(model_path: Path, model_name: str) -> Path:
     """Generate the destination for the models markdown file
@@ -87,9 +95,9 @@ def get_md_destination_directory(model_path: Path, model_name: str) -> Path:
     potential_model_dirs = _get_potential_model_doc_directories(model_path)
     if not potential_model_dirs:
         model_docs_dir = click.prompt(
-            "Please enter the directory path for the model doc", 
+            "Please enter the directory path for the model doc",
             type=Path,
-            default="models/documentation"
+            default="models/documentation",
         )
     elif len(potential_model_dirs) == 1:
         model_docs_dir = potential_model_dirs[0]
@@ -97,7 +105,7 @@ def get_md_destination_directory(model_path: Path, model_name: str) -> Path:
         model_docs_dir = click.prompt(
             "Multiple directories match the model path. Please enter the directory path for the model doc",
             type=click.Choice(potential_model_dirs),
-            default=potential_model_dirs[0]
+            default=potential_model_dirs[0],
         )
 
     if not model_docs_dir:
