@@ -1,4 +1,5 @@
 {{ begin_docs }}
+
 # {{model_name_humanized}}
 
 **Grain**: {{ grain }}
