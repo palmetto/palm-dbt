@@ -1,5 +1,17 @@
 # Palm dbt Changelog
 
+## 0.3.1
+
+> 09/21/2022
+
+Improvements:
+- **model-doc command**: now supports advanced dbt project structures, parsese
+the dbt_project and includes CLI prompts to ensure model doc is created in the
+appropriate directory.
+- **dbt test no longer runs seed**: palm test no longer runs seeds before 
+executing tests. This was a strange decision and didn't really make any sense,
+caused slower dev/test cycles and added no value.
+
 ## 0.3.0
 
 > 05/10/2022
