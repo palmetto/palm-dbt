@@ -13,6 +13,8 @@ class Project:
         self.analysis_paths = data.get('analysis-paths', 'analysis')
         self.test_paths = data.get('test-paths', 'tests')
         self.packages_install_path = data.get('packages-install-path', 'packages')
+        # Supports dbt < 1.0.0 - this will be removed in an upcoming release
+        self.modules_path = data.get('modules-path', 'dbt_modules')
         self.docs_paths = data.get('docs-paths', [])
         self.vars = data.get('vars', {})
         self.seeds = data.get('seeds', {})
