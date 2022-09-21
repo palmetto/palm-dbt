@@ -6,6 +6,8 @@ from pathlib import Path
 from functools import lru_cache
 from typing import List
 
+from palm.plugins.dbt.parsers import parse_project
+
 
 @click.command("model-doc")
 @click.argument("model", required=True, type=click.Path(exists=True))
@@ -30,7 +32,7 @@ def generate_model_md_file(environment, model_path: Path, model_name: str) -> Pa
         Path: The path to the generated model markdown file
     """
     destination = get_md_destination_directory(model_path, model_name)
-    click.echo(click.style(f"Generating model.md in {destination}", fg="green"))
+    click.echo(click.style(f"Generating {model_name}.md in {destination}", fg="green"))
 
     grain = click.prompt("What is the grain of the model?", type=str)
     description = click.prompt(
@@ -49,32 +51,73 @@ def generate_model_md_file(environment, model_path: Path, model_name: str) -> Pa
     return destination / f"{model_name}.md"
 
 
+def _get_potential_model_doc_directories(model_path: Path) -> List[str]:
+    """Infer potential model types from the path of the model
+
+    Args:
+        model_path (Path): The path to the model
+
+    Returns:
+        List[str]: A list of potential model types
+    """
+    # TODO: Implement dbt_project.yml parsing to get the docs directory (and other things)
+    # This should be read from dbt_project configuration
+    project_conf = parse_project()
+    model_path_dirs = model_path.parent.parts
+    if project_conf.docs_paths:
+        model_types = []
+        for doc_path in project_conf.docs_paths:
+            model_docs_path = Path(doc_path, 'models')
+            model_doc_types = {dir.stem for dir in model_docs_path.glob("*")}
+            model_type_matches = model_doc_types.intersection(model_path_dirs)
+            if model_type_matches:
+                model_types.extend(
+                    list(map(lambda p: model_docs_path / p, model_type_matches))
+                )
+        return model_types
+
+    else:
+        model_docs_path = Path("models/documentation")
+        model_doc_types = {dir.stem for dir in model_docs_path.glob("*")}
+        return [
+            model_docs_path / model_dir
+            for model_dir in model_path_dirs
+            if model_dir in model_doc_types
+        ]
+
+
 def get_md_destination_directory(model_path: Path, model_name: str) -> Path:
     """Generate the destination for the models markdown file
 
     Note that the model must have a parent directory that matches the name of
     and existing group of model docs.
     """
-    model_docs_path = Path("models/documentation/models")
-    model_doc_types = [dir.stem for dir in model_docs_path.glob("*")]
-    model_type = ''
-    for part in model_path.parts:
-        if part in model_doc_types:
-            model_type = part
-            break
+    potential_model_dirs = _get_potential_model_doc_directories(model_path)
+    if not potential_model_dirs:
+        model_docs_dir = click.prompt(
+            "Please enter the directory path for the model doc",
+            type=Path,
+            default="models/documentation",
+        )
+    elif len(potential_model_dirs) == 1:
+        model_docs_dir = potential_model_dirs[0]
+    else:
+        model_docs_dir = click.prompt(
+            "Multiple directories match the model path. Please enter the directory path for the model doc",
+            type=click.Choice(potential_model_dirs),
+            default=potential_model_dirs[0],
+        )
 
-    if not model_type:
-        click.secho(f"Could not determine model type for {model_name}", fg="red")
-        click.echo(f"Models should be in one of these directories: {model_doc_types}")
+    if not model_docs_dir:
+        click.secho(f"Could not determine directory for {model_name} docs", fg="red")
         raise Exception("Could not determine model type")
 
-    destination = model_docs_path / model_type
-    return destination
+    return model_docs_dir
 
 
 def generate_yml_file(model_path: Path, model_name: str) -> Path:
     """Generate the model yml file"""
-    click.echo(click.style(f"Generating model.yml for {model_name}", fg="green"))
+    click.echo(click.style(f"Generating {model_name}.yml for {model_name}", fg="green"))
     target_file = model_name + ".yml"
     destination = model_path.parent / target_file
     if destination.exists():
@@ -94,7 +137,7 @@ def generate_yml_file(model_path: Path, model_name: str) -> Path:
         ],
     }
     destination.write_text(yaml.dump(model, sort_keys=False, default_flow_style=False))
-    click.echo(click.style(f"Model.yml generated at {destination}", fg="green"))
+    click.echo(click.style(f"{model_name}.yml generated at {destination}", fg="green"))
     return destination
 
 
