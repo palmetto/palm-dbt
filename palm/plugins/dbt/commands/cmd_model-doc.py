@@ -234,9 +234,15 @@ def existing_column_docs() -> List[str]:
     Returns:
         List[str]: List of existing column doc names
     """
-    column_docs = Path("models/documentation/columns").glob("*.md")
-    column_doc_names = [column_doc.stem for column_doc in column_docs]
-    return column_doc_names
+    project_conf = parse_project()
+    if project_conf.docs_paths:
+        column_docs = []
+        for doc_path in project_conf.docs_paths:
+            column_docs.extend(Path(doc_path, 'columns').glob('*.md'))
+    else:
+        column_docs = Path("models/documentation/columns").glob("*.md")
+
+    return [column_doc.stem for column_doc in column_docs]
 
 
 def create_column_list(column_names: List[str]) -> List[dict]:
