@@ -255,10 +255,17 @@ def create_column_list(column_names: List[str]) -> List[dict]:
         List[dict]: List of column dictionaries
     """
     columns = []
+    columns_without_existing_docs = [c for c in column_names if not column_has_existing_doc(c)]
+
+    manual_descriptions = click.confirm(f'Do you want to manually enter descriptions for {len(columns_without_existing_docs)} columns?', default=False)
     for col_name in column_names:
         description = 'TODO: Add description'
         if column_has_existing_doc(col_name):
             description = f'{{{{ doc("{col_name}") }}}}'
+        elif manual_descriptions:
+            description = click.prompt(f'Description for {col_name}', default=description)
+            # TODO: Add ability to generate column doc file for manual descriptions
+
         col_dict = {"name": col_name, "description": description}
         columns.append(col_dict)
     return columns
