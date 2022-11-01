@@ -1,6 +1,7 @@
 import re
 from typing import Optional, Dict, Tuple
 from palm.plugins.dbt.local_user_lookup import local_user_lookup
+from palm.plugins.dbt.plugin_config import dbt_artifacts_local, dbt_artifacts_prod
 
 """ Shared DBT utilities to build out common CLI options """
 
@@ -51,6 +52,7 @@ def dbt_env_vars(branch: str) -> Dict:
         'PDP_DEV_SCHEMA': _generate_schema_from_branch(branch),
         'PDP_ENV': 'DEVELOPMENT',  # Deprecated - this will be removed!
         'PALM_DBT_ENV': 'DEVELOPMENT',
+        'DBT_'
     }
 
 
