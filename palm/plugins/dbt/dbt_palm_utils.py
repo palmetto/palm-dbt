@@ -4,6 +4,7 @@ from palm.plugins.dbt.local_user_lookup import local_user_lookup
 
 """ Shared DBT utilities to build out common CLI options """
 
+
 def dbt_env_vars(branch: str) -> Dict:
     return {
         'PDP_DEV_SCHEMA': _generate_schema_from_branch(branch),
