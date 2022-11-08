@@ -1,4 +1,5 @@
 import click
+from pathlib import Path
 from palm.plugins.dbt.plugin_config import PluginConfig
 
 
@@ -11,8 +12,8 @@ def cli(environment):
 
     has_prod_artifacts = click.confirm("Do you have production dbt artifacts saved locally?")
     if has_prod_artifacts:
-        config['dbt_artifacts_prod'] = click.prompt("Prod artifacts location:")
+        config['dbt_artifacts_prod'] = Path(click.prompt("Prod artifacts location:"))
     
-    config['dbt_artifacts_local'] = click.prompt("Local artifacts location:", default="target/")
+    config['dbt_artifacts_local'] = Path(click.prompt("Local artifacts location:", default="target/"))
 
     PluginConfig.write_config(config)

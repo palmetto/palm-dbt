@@ -7,7 +7,6 @@ import yaml
 class PluginConfig:
 
     def __init__(self, project_path: Optional["Path"] = Path.cwd()):
-        self.project_root = project_path
         self.config_path = project_path / '.palm' / 'dbt-config.yaml'
         self.config = self._get_config()
 
@@ -35,7 +34,8 @@ class PluginConfig:
         secret = self.config.get('dbt_artifacts_prod')
         if not secret:
             raise ValueError(
-                'Prod artifacts path not found, run `palm dbt-config`')
+                'Prod artifacts path not found, run `palm dbt-config`'
+            )
         return secret
 
     @classmethod
