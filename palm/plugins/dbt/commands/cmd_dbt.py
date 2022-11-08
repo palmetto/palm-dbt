@@ -12,7 +12,7 @@ from palm.plugins.dbt.dbt_palm_utils import dbt_env_vars
 @click.option('--fail-fast', '-x', is_flag=True, default=False, help='Stop execution upon a first failure')
 @click.option("--full-refresh", is_flag=True, default=False , help="Specify the nodes to exclude.")
 @click.option("--cleanup", is_flag=True, default=False, help="Drop the schema after running the command.")
-@click.option('--no-seed', is_flag=True, default=False, help='Do not create seeds before running the command.')
+@click.option('--seed', is_flag=True, default=False, help='Create seeds before running the command.')
 @click.option("--options", '-o', help="passthrough for a string of dbt options - useful if an option you need is not available in palm")
 @click.argument("args", nargs=-1)
 @click.pass_context
@@ -23,7 +23,7 @@ def cli(
     selector: Optional[str],
     fail_fast: bool,
     full_refresh: bool,
-    no_seed: bool,
+    seed: bool,
     cleanup: bool,
     options,
     args: Tuple,
@@ -46,7 +46,7 @@ def cli(
 
     cmd = [f'dbt {" ".join(args)}']
 
-    if not no_seed:
+    if seed:
         cmd.insert(0, f"dbt seed --full-refresh &&")
     if select:
         cmd.append(f" --select {select}")
