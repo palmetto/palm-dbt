@@ -14,6 +14,6 @@ def cli(environment):
     if has_prod_artifacts:
         config['dbt_artifacts_prod'] = Path(click.prompt("Prod artifacts location:"))
     
-    config['dbt_artifacts_local'] = Path(click.prompt("Local artifacts location:", default="target/"))
+    config['dbt_artifacts_local'] = Path(click.prompt("Local artifacts location:", default=Path("target/")))
 
     PluginConfig.write_config(config)
