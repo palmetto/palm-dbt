@@ -4,16 +4,40 @@ import click
 from typing import Optional, Tuple
 from palm.plugins.dbt.dbt_palm_utils import dbt_env_vars
 
-@click.command("dbt")
 
+@click.command("dbt")
 @click.option("--select", '-s', help="Specify the nodes to include.")
 @click.option("--exclude", '-e', help="Specify the nodes to exclude.")
-@click.option("--selector", help="Specify the selector to use, defined in selectors.yml.")
-@click.option('--fail-fast', '-x', is_flag=True, default=False, help='Stop execution upon a first failure')
-@click.option("--full-refresh", is_flag=True, default=False , help="Specify the nodes to exclude.")
-@click.option("--cleanup", is_flag=True, default=False, help="Drop the schema after running the command.")
-@click.option('--seed', is_flag=True, default=False, help='Create seeds before running the command.')
-@click.option("--options", '-o', help="passthrough for a string of dbt options - useful if an option you need is not available in palm")
+@click.option(
+    "--selector", help="Specify the selector to use, defined in selectors.yml."
+)
+@click.option(
+    '--fail-fast',
+    '-x',
+    is_flag=True,
+    default=False,
+    help='Stop execution upon a first failure',
+)
+@click.option(
+    "--full-refresh", is_flag=True, default=False, help="Specify the nodes to exclude."
+)
+@click.option(
+    "--cleanup",
+    is_flag=True,
+    default=False,
+    help="Drop the schema after running the command.",
+)
+@click.option(
+    '--seed',
+    is_flag=True,
+    default=False,
+    help='Create seeds before running the command.',
+)
+@click.option(
+    "--options",
+    '-o',
+    help="passthrough for a string of dbt options - useful if an option you need is not available in palm",
+)
 @click.argument("args", nargs=-1)
 @click.pass_context
 def cli(
