@@ -1,6 +1,7 @@
 import click
 from typing import Optional, Tuple
 from palm.plugins.dbt.dbt_palm_utils import shell_options, dbt_env_vars
+from palm.plugins.dbt.plugin_config import PluginConfig
 
 
 @click.command("run")
