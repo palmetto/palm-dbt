@@ -52,7 +52,6 @@ def dbt_env_vars(branch: str) -> Dict:
         'PDP_DEV_SCHEMA': _generate_schema_from_branch(branch),
         'PDP_ENV': 'DEVELOPMENT',  # Deprecated - this will be removed!
         'PALM_DBT_ENV': 'DEVELOPMENT',
-        'DBT_'
     }
 
 
