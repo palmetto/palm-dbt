@@ -64,5 +64,5 @@ def cli(
         cmd.append(" && dbt run-operation drop_branch_schemas")
 
     env_vars = dbt_env_vars(ctx.obj.palm.branch)
-    success, msg = ctx.obj.run_in_docker(cmd, env_vars)
+    success, msg = ctx.obj.run_in_docker(" ".join(cmd), env_vars)
     click.secho(msg, fg="green" if success else "red")
