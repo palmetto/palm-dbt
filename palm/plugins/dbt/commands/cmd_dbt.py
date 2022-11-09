@@ -73,9 +73,9 @@ def cli(
     if seed:
         cmd.insert(0, f"dbt seed --full-refresh &&")
     if select:
-        cmd.append(f" --select {select}")
+        cmd.append(f" --select {' '.join(select)}")
     if exclude:
-        cmd.append(f" --exclude {exclude}")
+        cmd.append(f" --exclude {' '.join(exclude)}")
     if selector:
         cmd.append(f" --selector {selector}")
     if fail_fast:
