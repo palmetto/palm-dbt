@@ -10,7 +10,7 @@ from palm.plugins.dbt.dbt_palm_utils import dbt_env_vars
     help="Disables the setting which exits immediately if a single model fails to build",
 )
 @click.option(
-    "--persist", is_flag=True, help="will not drop the test schema at the end"
+    "--clean", is_flag=True, help="Drop the test schema after the run is complete"
 )
 @click.option("--models", multiple=True, help="see dbt docs on models flag")
 @click.option("--select", multiple=True, help="see dbt docs on select flag")
@@ -25,7 +25,7 @@ from palm.plugins.dbt.dbt_palm_utils import dbt_env_vars
 def cli(
     ctx,
     no_fail_fast: bool,
-    persist: bool,
+    clean: bool,
     full_refresh: bool,
     no_seed: bool,
     models: Optional[Tuple] = tuple(),
@@ -52,7 +52,7 @@ def cli(
         cmd.append("--fail-fast")
     if full_refresh:
         cmd.append("--full-refresh")
-    if not persist:
+    if clean:
         cmd.append("&& dbt run-operation drop_branch_schemas")
 
     env_vars = dbt_env_vars(ctx.obj.palm.branch)

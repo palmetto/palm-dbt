@@ -5,7 +5,7 @@ from palm.plugins.dbt.dbt_palm_utils import dbt_env_vars
 
 @click.command('test')
 @click.option(
-    "--persist", is_flag=True, help="will not drop the test schema at the end"
+    "--clean", is_flag=True, help="drop the test schema after the run is complete"
 )
 @click.option("--models", multiple=True, help="see dbt docs on models flag")
 @click.option("--select", multiple=True, help="see dbt docs on select flag")
@@ -14,7 +14,7 @@ from palm.plugins.dbt.dbt_palm_utils import dbt_env_vars
 @click.pass_context
 def cli(
     ctx,
-    persist: bool,
+    clean: bool,
     no_fail_fast: bool,
     models: Optional[Tuple] = tuple(),
     select: Optional[Tuple] = tuple(),
@@ -34,7 +34,7 @@ def cli(
         cmd.extend(exclude)
     if not no_fail_fast:
         cmd.append('--fail-fast')
-    if not persist:
+    if clean:
         cmd.append('&& dbt run-operation drop_branch_schemas')
 
     env_vars = dbt_env_vars(ctx.obj.palm.branch)
