@@ -5,9 +5,10 @@ import yaml
 
 
 class PluginConfig:
+    config_path = Path.cwd() / '.palm' / 'dbt-config.yaml'
+    config: dict
 
-    def __init__(self, project_path: Optional["Path"] = Path.cwd()):
-        self.config_path = project_path / '.palm' / 'dbt-config.yaml'
+    def __init__(self):
         self.config = self._get_config()
 
     def _get_config(self) -> object:
