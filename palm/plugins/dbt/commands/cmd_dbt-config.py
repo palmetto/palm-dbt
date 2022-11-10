@@ -12,8 +12,10 @@ def cli(environment):
 
     has_prod_artifacts = click.confirm("Do you have production dbt artifacts saved locally?")
     if has_prod_artifacts:
-        config['dbt_artifacts_prod'] = Path(click.prompt("Prod artifacts location:"))
-    
-    config['dbt_artifacts_local'] = Path(click.prompt("Local artifacts location:", default=Path("target/")))
+        prod = click.prompt("Prod artifacts location:", type=click.Path(exists=True))
+        config["dbt_artifacts_prod"] = str(prod)
+
+    local = click.prompt("Local artifacts location:", type=click.Path(exists=True) ,default=Path("target/"))
+    config['dbt_artifacts_local'] = str(local)
 
     PluginConfig.write_config(config)
