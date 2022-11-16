@@ -6,8 +6,8 @@ from palm.plugins.dbt.dbt_palm_utils import dbt_env_vars
 
 
 @click.command("dbt")
-@click.option("--select", '-s', help="Specify the nodes to include.")
-@click.option("--exclude", '-e', help="Specify the nodes to exclude.")
+@click.option("--select", '-s', multiple=True, help="Specify the nodes to include.")
+@click.option("--exclude", '-e', multiple=True, help="Specify the nodes to exclude.")
 @click.option(
     "--selector", help="Specify the selector to use, defined in selectors.yml."
 )
