@@ -18,8 +18,8 @@ class PluginConfig:
             object: dict of project config options
         """
         if not self.config_path.exists():
-          secho('No user config found, run `palm dbt-config`', fg='red')
-          return {}
+            secho('No user config found, run `palm dbt-config`', fg='red')
+            return {}
 
         return yaml.safe_load(self.config_path.read_text())
 
@@ -34,9 +34,7 @@ class PluginConfig:
     def dbt_artifacts_prod(self) -> str:
         secret = self.config.get('dbt_artifacts_prod')
         if not secret:
-            raise ValueError(
-                'Prod artifacts path not found, run `palm dbt-config`'
-            )
+            raise ValueError('Prod artifacts path not found, run `palm dbt-config`')
         return secret
 
     @classmethod
