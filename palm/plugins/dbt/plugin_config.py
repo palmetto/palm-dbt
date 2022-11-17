@@ -2,6 +2,7 @@ from pathlib import Path
 from click import secho
 from typing import Optional
 import yaml
+import sys
 
 
 class PluginConfig:
@@ -19,7 +20,7 @@ class PluginConfig:
         """
         if not self.config_path.exists():
             secho('No user config found, run `palm dbt-config`', fg='red')
-            return {}
+            sys.exit(1)
 
         return yaml.safe_load(self.config_path.read_text())
 
