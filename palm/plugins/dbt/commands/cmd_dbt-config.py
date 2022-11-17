@@ -3,7 +3,7 @@ from pathlib import Path
 from palm.plugins.dbt.plugin_config import PluginConfig
 
 
-@click.command("config")
+@click.command("dbt-config")
 @click.pass_obj
 def cli(environment):
     """Set up your palm dbt plugin configuration"""
