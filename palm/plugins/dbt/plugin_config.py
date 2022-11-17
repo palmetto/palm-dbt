@@ -33,10 +33,10 @@ class PluginConfig:
 
     @property
     def dbt_artifacts_prod(self) -> str:
-        secret = self.config.get('dbt_artifacts_prod')
-        if not secret:
+        key = self.config.get('dbt_artifacts_prod')
+        if not key:
             raise ValueError('Prod artifacts path not found, run `palm dbt-config`')
-        return secret
+        return key
 
     @classmethod
     def write_config(cls, config):
