@@ -79,6 +79,16 @@ protected_branches:
   # Any other branches you want to protect
 ```
 
+### About dbt-config
+
+The plugin config allows you to make some configuration details for your local 
+dbt project available to Palm. Some commands may require initialization of the 
+dbt plugin config in order to work properly.
+
+Current available configuration includes storing the paths to your local 
+and/or production dbt artifacts (`manifest.json`, `run_results.json`) which 
+Palm will use to assign the dbt environment variables for managing project state.
+
 ## About the palm dbt branch naming macros
 
 One of the most painful parts of data testing is unfortunate 
