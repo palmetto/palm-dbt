@@ -18,9 +18,9 @@ def cli(environment):
         config["dbt_artifacts_prod"] = str(prod)
 
     local = click.prompt(
-        "Local artifacts location:", 
+        "Local artifacts location:",
         type=click.Path(exists=True),
-        default=Path("target/")
+        default=Path("target/"),
     )
     config['dbt_artifacts_local'] = str(local)
 
