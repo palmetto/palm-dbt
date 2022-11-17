@@ -16,6 +16,7 @@ def cli(environment):
     if has_prod_artifacts:
         prod = click.prompt("Prod artifacts location:", type=click.Path(exists=True))
         config["dbt_artifacts_prod"] = str(prod)
+        click.secho(f"Saved prod artifacts location:  {prod}", fg="green")
 
     local = click.prompt(
         "Local artifacts location:",
@@ -23,5 +24,6 @@ def cli(environment):
         default=Path("target/"),
     )
     config['dbt_artifacts_local'] = str(local)
+    click.secho(f"Saved local artifacts location:  {local}", fg="green")
 
     PluginConfig.write_config(config)
