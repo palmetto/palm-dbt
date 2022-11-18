@@ -7,7 +7,7 @@ from palm.plugins.dbt.plugin_config import PluginConfig
 @click.pass_obj
 def cli(environment):
     """Set up your palm dbt plugin configuration"""
-    click.echo("Setting up your palm dbt configuration...", fg='yellow')
+    click.secho("Setting up your palm dbt configuration...", fg='yellow')
     config = {}
 
     has_prod_artifacts = click.confirm(
