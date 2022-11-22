@@ -34,7 +34,4 @@ class DbtPluginConfig(BasePluginConfig):
         )
         config['dbt_artifacts_local'] = str(local)
 
-        # I don't love that this has to be called by the implementing class
-        # could be cleaned up with a decorator or something similar in palm-cli
-        self.write(config)
         return config
