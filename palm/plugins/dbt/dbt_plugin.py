@@ -1,6 +1,8 @@
-from pathlib import Path
-from palm.plugins.base import BasePlugin
 import pkg_resources
+from pathlib import Path
+
+from palm.plugins.dbt.plugin_config import DbtPluginConfig
+from palm.plugins.base import BasePlugin
 
 
 def get_version():
@@ -16,4 +18,5 @@ DbtPlugin = BasePlugin(
     command_dir=Path(__file__).parent / 'commands',
     version=get_version(),
     package_location='https://github.com/palmetto/palm-dbt.git',
+    config=DbtPluginConfig()
 )
