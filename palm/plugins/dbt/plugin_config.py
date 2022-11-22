@@ -4,9 +4,11 @@ from pathlib import Path
 from pydantic import BaseModel
 from palm.plugins.base_plugin_config import BasePluginConfig
 
+
 class dbtPluginConfigModel(BaseModel):
     dbt_artifacts_prod: str
     dbt_artifacts_local: str
+
 
 class DbtPluginConfig(BasePluginConfig):
     def __init__(self):
@@ -19,7 +21,9 @@ class DbtPluginConfig(BasePluginConfig):
             "Do you have production dbt artifacts saved locally?"
         )
         if has_prod_artifacts:
-            prod = click.prompt("Prod artifacts location:", type=click.Path(exists=True))
+            prod = click.prompt(
+                "Prod artifacts location:", type=click.Path(exists=True)
+            )
             config["dbt_artifacts_prod"] = str(prod)
             click.secho(f"Saved prod artifacts location:  {prod}", fg="green")
 

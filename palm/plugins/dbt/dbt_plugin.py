@@ -18,5 +18,5 @@ DbtPlugin = BasePlugin(
     command_dir=Path(__file__).parent / 'commands',
     version=get_version(),
     package_location='https://github.com/palmetto/palm-dbt.git',
-    config=DbtPluginConfig()
+    config=DbtPluginConfig(),
 )
