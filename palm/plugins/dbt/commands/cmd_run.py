@@ -37,14 +37,11 @@ def cli(
         if not exit_code == 0:
             click.secho("'palm dbt-prod-manifest' not implemented. Can't pull prod artifacts without it!", fg='red')
             sys.exit(1)
-
+    
     env_vars = set_env_vars(environment, stateful, artifacts='prod' if defer else 'local')
 
-    targets = []
-    if models:
-        targets.extend(models)
-    if select:
-        targets.extend(select)
+    # --select and --models are interchangeable on dbt >= v1, combine the lists of selections
+    targets = list(set(models + select))
 
     # Build model run command
     run_cmd = build_run_command(
