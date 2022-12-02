@@ -16,9 +16,9 @@ def cli(ctx):
     plugin_config = ctx.obj.plugin_config("dbt")
     artifact_path = plugin_config.dbt_artifacts_prod
 
-    cmd = "echo 'No-op command! Please override this command in your own project by running: palm override --name prod-artifacts'"
+    msg = "No-op command! Please override this command in your own project by running: palm override --name prod-artifacts'"
 
     env_vars = dbt_env_vars(ctx.obj.palm.branch)
-    success, msg = ctx.obj.run_in_docker(cmd, env_vars)
+    # success, msg = ctx.obj.run_in_docker(cmd, env_vars)
 
-    click.secho(msg, fg="green" if success else "red")
+    click.secho(msg, fg="red")
