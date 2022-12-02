@@ -5,7 +5,7 @@ from palm.plugins.dbt.dbt_palm_utils import dbt_env_vars
 @click.command("prod-artifacts")
 @click.pass_context
 def cli(ctx):
-    """No-op command: Download your DBT artifacts from production.
+    """No-op command: Download your dbt artifacts from production.
 
     This command is a no-op as the implementation will differ depending on your
     production environment. You should override this command in your own
