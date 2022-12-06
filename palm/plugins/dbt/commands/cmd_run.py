@@ -5,14 +5,22 @@ import sys
 
 
 @click.command("run")
-@click.option("--no-fail-fast", is_flag=True, help="Turns off --fail-fast. See dbt docs on fail-fast flag.")
+@click.option(
+    "--no-fail-fast",
+    is_flag=True,
+    help="Turns off --fail-fast. See dbt docs on fail-fast flag.",
+)
 @click.option("--clean", is_flag=True, help="Drop the test schema after the run")
 @click.option("--models", "-m", multiple=True, help="See dbt docs on models flag")
 @click.option("--select", "-s", multiple=True, help="See dbt docs on select flag")
 @click.option("--exclude", "-e", multiple=True, help="See dbt docs on exclude flag")
 @click.option("--defer", is_flag=True, help="See dbt docs on defer flag")
 @click.option("--iterative", is_flag=True, help="Iterative stateful dbt run")
-@click.option("--full-refresh", is_flag=True, help="Will perform a full refresh on incremental models")
+@click.option(
+    "--full-refresh",
+    is_flag=True,
+    help="Will perform a full refresh on incremental models",
+)
 @click.option("--no-seed", is_flag=True, help="Will skip seed full refresh")
 @click.pass_obj
 def cli(
@@ -35,15 +43,20 @@ def cli(
         click.secho("Running 'palm prod-artifacts'...", fg='yellow')
         exit_code, _, _ = environment.run_on_host("palm prod-artifacts")
         if exit_code == 2:
-            click.secho("'palm prod-artifacts' not implemented. Can't pull prod artifacts without it!", fg='red')
+            click.secho(
+                "'palm prod-artifacts' not implemented. Can't pull prod artifacts without it!",
+                fg='red',
+            )
             sys.exit(1)
         elif exit_code != 0:
-            click.secho("Something went wrong while pulling the prod artifacts.", fg='red')
+            click.secho(
+                "Something went wrong while pulling the prod artifacts.", fg='red'
+            )
             sys.exit(1)
         artifacts = 'prod'
     else:
         artifacts = 'local'
-    
+
     env_vars = set_env_vars(environment, stateful, artifacts)
 
     # --select and --models are interchangeable on dbt >= v1, combine the lists of selections
@@ -58,7 +71,7 @@ def cli(
         targets=targets,
         exclude=exclude,
         defer=defer,
-        vars=vars
+        vars=vars,
     )
 
     # Where the magic happens
@@ -73,15 +86,22 @@ def cli(
                 break
 
             env_vars = set_env_vars(environment, stateful, artifacts='local')
-            stateful_run_cmd = build_run_command(targets=["result:error","result:skipped"], no_seed=iterative, no_fail_fast=iterative)
+            stateful_run_cmd = build_run_command(
+                targets=["result:error", "result:skipped"],
+                no_seed=iterative,
+                no_fail_fast=iterative,
+            )
             success, msg = environment.run_in_docker(stateful_run_cmd, env_vars)
-   
+
     click.secho(msg, fg="green" if success else "red")
 
     if clean:
         # Clean up after ourselves
-        success, msg = environment.run_in_docker("dbt run-operation drop_branch_schemas && dbt clean", env_vars)
+        success, msg = environment.run_in_docker(
+            "dbt run-operation drop_branch_schemas && dbt clean", env_vars
+        )
         click.secho(msg, fg="green" if success else "red")
+
 
 def build_run_command(
     full_refresh: bool = False,
