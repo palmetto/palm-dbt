@@ -6,6 +6,7 @@ import sys
 @click.command("prod-artifacts")
 @click.pass_obj
 def cli(environment):
+
     """No-op command: Download your dbt artifacts from production.
 
     This command is a no-op as the implementation will differ depending on your
