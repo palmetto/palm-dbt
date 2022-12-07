@@ -44,7 +44,7 @@ def cli(
         exit_code, _, _ = environment.run_on_host("palm prod-artifacts")
         if exit_code == 2:
             click.secho(
-                "'palm prod-artifacts' not implemented. Can't pull prod artifacts without it!",
+                "'palm prod-artifacts' not implemented. Can't use --defer without it!",
                 fg='red',
             )
             sys.exit(1)
@@ -74,7 +74,6 @@ def cli(
         vars=vars,
     )
 
-    # Where the magic happens
     success, msg = environment.run_in_docker(run_cmd, env_vars)
 
     if iterative:
@@ -85,7 +84,7 @@ def cli(
             if not cycle:
                 break
 
-            env_vars = set_env_vars(environment, stateful, artifacts='local')
+            env_vars = set_env_vars(environment, stateful)
             stateful_run_cmd = build_run_command(
                 targets=["result:error", "result:skipped"],
                 no_seed=iterative,
@@ -96,7 +95,6 @@ def cli(
     click.secho(msg, fg="green" if success else "red")
 
     if clean:
-        # Clean up after ourselves
         success, msg = environment.run_in_docker(
             "dbt run-operation drop_branch_schemas && dbt clean", env_vars
         )
