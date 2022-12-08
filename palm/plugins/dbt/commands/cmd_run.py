@@ -53,7 +53,7 @@ def cli(
                 "Something went wrong while pulling the prod artifacts.", fg='red'
             )
             sys.exit(1)
-    
+
     env_vars = set_env_vars(environment, stateful, defer)
 
     # --select and --models are interchangeable on dbt >= v1, combine the lists of selections
