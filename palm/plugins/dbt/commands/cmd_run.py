@@ -53,16 +53,12 @@ def cli(
                 "Something went wrong while pulling the prod artifacts.", fg='red'
             )
             sys.exit(1)
-        artifacts = 'prod'
-    else:
-        artifacts = 'local'
-
-    env_vars = set_env_vars(environment, stateful, artifacts)
+    
+    env_vars = set_env_vars(environment, stateful, defer)
 
     # --select and --models are interchangeable on dbt >= v1, combine the lists of selections
     targets = list(set(models + select))
 
-    # Build model run command
     run_cmd = build_run_command(
         # Is there a better way to pass these args in?
         full_refresh=full_refresh,
@@ -141,13 +137,13 @@ def build_run_command(
     return " ".join(cmd)
 
 
-def set_env_vars(environment, stateful: bool, artifacts='local') -> dict:
+def set_env_vars(environment, stateful: bool, defer: bool = False) -> dict:
     plugin_config = environment.plugin_config('dbt')
     env_vars = dbt_env_vars(environment.palm.branch)
     if stateful:
         env_vars['DBT_DEFER_TO_STATE'] = 'true'
-    if artifacts == 'local':
-        env_vars['DBT_ARTIFACT_STATE_PATH'] = plugin_config.dbt_artifacts_local
-    elif artifacts == 'prod':
+    if defer:
         env_vars['DBT_ARTIFACT_STATE_PATH'] = plugin_config.dbt_artifacts_prod
+    else:
+        env_vars['DBT_ARTIFACT_STATE_PATH'] = plugin_config.dbt_artifacts_local
     return env_vars
