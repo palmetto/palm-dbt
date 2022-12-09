@@ -67,8 +67,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/palm-${{steps.get_version.outputs.VERSION}}.tar.gz
-          asset_name: palm--${{steps.get_version.outputs.VERSION}}.tar.gz
+          asset_path: ./dist/palm-dbt-${{steps.get_version.outputs.VERSION}}.tar.gz
+          asset_name: palm-dbt--${{steps.get_version.outputs.VERSION}}.tar.gz
           asset_content_type: application/tar+gzip
 
       - name: Upload wheel to release
@@ -78,8 +78,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/palm-${{steps.get_version.outputs.VERSION}}-py3-none-any.whl
-          asset_name: palm--${{steps.get_version.outputs.VERSION}}-py3-none-any.whl
+          asset_path: ./dist/palm-dbt-${{steps.get_version.outputs.VERSION}}-py3-none-any.whl
+          asset_name: palm-dbt--${{steps.get_version.outputs.VERSION}}-py3-none-any.whl
           asset_content_type: application/wheel
 
       - name: Publish package
