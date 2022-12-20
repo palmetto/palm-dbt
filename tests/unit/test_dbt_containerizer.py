@@ -115,6 +115,7 @@ def test_validate_dbt_version(environment):
     is_valid, message = c.validate_dbt_version()
     assert not is_valid
 
+
 def test_profile_strategy_in_project(tmpdir, monkeypatch):
     """When the DBT_PROFILES_DIR is inside the project,
     set the path in compose and env relative to /app
