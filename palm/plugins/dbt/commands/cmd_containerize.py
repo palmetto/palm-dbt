@@ -8,12 +8,12 @@ from palm.plugins.dbt.dbt_containerizer import DbtContainerizer
 @click.option(
     "--version",
     multiple=False,
-    help="dbt version to use (e.g. 0.21.0)",
+    help="dbt version to use (e.g. 1.0.1)",
 )
 @click.pass_context
 def cli(ctx, version: Optional[str]):
     if not version:
-        version = click.prompt("Enter dbt version to use", type=str, default="0.21.0")
+        version = click.prompt("Enter dbt version to use", type=str, default="1.0.1")
 
     template_dir = Path(Path(__file__).parents[1], "templates") / "containerize"
     DbtContainerizer(ctx, template_dir, version).run()

@@ -95,21 +95,25 @@ def test_validate_dbt_version(environment):
     is_valid, message = c.validate_dbt_version()
     assert is_valid
 
-    # Maximum version is valid
+    # Supported version is valid
     c = DbtContainerizer(ctx, templates_dir, '0.21.1')
     is_valid, message = c.validate_dbt_version()
     assert is_valid
 
-    # Does not support above maximum version
-    c = DbtContainerizer(ctx, templates_dir, '0.22.0')
+    # Next major is valid
+    c = DbtContainerizer(ctx, templates_dir, '1.0.0')
+    is_valid, message = c.validate_dbt_version()
+    assert is_valid
+
+    # Next minor is invalid
+    c = DbtContainerizer(ctx, templates_dir, '1.4.0')
     is_valid, message = c.validate_dbt_version()
     assert not is_valid
 
     # Next major is invalid
-    c = DbtContainerizer(ctx, templates_dir, '1.0.0')
+    c = DbtContainerizer(ctx, templates_dir, '2.1.0')
     is_valid, message = c.validate_dbt_version()
     assert not is_valid
-
 
 def test_profile_strategy_in_project(tmpdir, monkeypatch):
     """When the DBT_PROFILES_DIR is inside the project,
@@ -217,16 +221,9 @@ def test_dbt_packages_dir(tmpdir, environment):
     assert c.get_packages_dir() == 'custom_packages_path'
 
 
-# v1.0 support - Note that we are not currently supporting v1.0 but these tests
-# are here to document where we are building in support for v1.0 changes
-
-
 def test_is_dbt_v1(environment):
     ctx = MockContext(obj=environment)
     c = DbtContainerizer(ctx, Path('.'))
-
-    # Default is not v1.0 (yet)
-    assert not c.is_dbt_v1
 
     # True if dbt_version is passed as v1.0.x
     c = DbtContainerizer(ctx, Path('.'), '1.0.0')
