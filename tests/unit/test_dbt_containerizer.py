@@ -206,8 +206,11 @@ def test_dbt_packages_dir(tmpdir, environment):
     c = DbtContainerizer(ctx, templates_dir)
 
     # default value
-    assert c.get_packages_dir() == 'dbt_modules'
-
+    if not c.is_dbt_v1:
+        assert c.get_packages_dir() == 'dbt_modules'
+    else:
+        assert c.get_packages_dir() == 'dbt_packages'
+    
     # modules-path config
     dbt_config['modules-path'] = 'custom_modules_path'
     with open(tmpdir / 'dbt_project.yml', 'w') as f:
