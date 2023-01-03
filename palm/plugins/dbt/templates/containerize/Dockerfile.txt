@@ -1,4 +1,4 @@
-FROM fishtownanalytics/dbt:{{dbt_version}}
+FROM ghcr.io/dbt-labs/dbt-core:{{dbt_version}}
 COPY . /app/
 WORKDIR /app
 ENV PYTHONPATH=${PYTHONPATH}:${PWD}
