@@ -1,12 +1,13 @@
 import click
 
+from typing import Optional
 from pathlib import Path
 from pydantic import BaseModel
 from palm.plugins.base_plugin_config import BasePluginConfig
 
 
 class dbtPluginConfigModel(BaseModel):
-    dbt_artifacts_prod: str
+    dbt_artifacts_prod: Optional[str]
     dbt_artifacts_local: str
 
 
