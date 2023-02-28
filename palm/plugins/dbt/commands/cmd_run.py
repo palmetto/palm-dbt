@@ -127,8 +127,6 @@ def build_run_command(
         cmd.extend(exclude)
     if not no_fail_fast:
         cmd.append("--fail-fast")
-    if full_refresh:
-        cmd.append("--full-refresh")
     if defer:
         cmd.append("--defer")
     if vars:
