@@ -107,18 +107,13 @@ def build_run_command(
     vars: Optional[str] = None,
 ) -> str:
     cmd = []
-    if full_refresh:
-        full_refresh_option = "--full-refresh"
-    else:
-        full_refresh_option = ""
+    full_refresh_option = " --full-refresh" if full_refresh else ""
 
     if not no_seed:
-        cmd.append(f"dbt seed {full_refresh_option}")
+        cmd.append(f"dbt seed{full_refresh_option}")
         cmd.append("&&")
 
-    cmd.append(f"dbt run {full_refresh_option}")
-    if not targets:
-        cmd.extend(["--defer", "--select", "state:new", "state:modified+"])
+    cmd.append(f"dbt run{full_refresh_option}")
     if targets:
         cmd.append("--select")
         cmd.extend(targets)
@@ -128,6 +123,7 @@ def build_run_command(
     if not no_fail_fast:
         cmd.append("--fail-fast")
     if defer:
+        cmd.extend(["--select", "state:new", "state:modified+"])
         cmd.append("--defer")
     if vars:
         cmd.append(f"--vars '{vars}'")
