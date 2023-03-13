@@ -123,7 +123,8 @@ def build_run_command(
     if not no_fail_fast:
         cmd.append("--fail-fast")
     if defer:
-        cmd.extend(["--select", "state:new", "state:modified+"])
+        if not targets:
+            cmd.extend(["--select", "state:new", "state:modified+"])
         cmd.append("--defer")
     if vars:
         cmd.append(f"--vars '{vars}'")
