@@ -118,7 +118,7 @@ def build_run_command(
 
     cmd.append(f"dbt run {full_refresh_option}")
     if not targets:
-        cmd.extend(["--select", "state:new", "state:modified+"])
+        cmd.extend(["--defer", "--select", "state:new", "state:modified+"])
     if targets:
         cmd.append("--select")
         cmd.extend(targets)
