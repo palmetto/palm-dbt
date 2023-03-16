@@ -13,7 +13,7 @@ class DbtContainerizer(PythonContainerizer):
     """
 
     def __init__(
-        self, ctx, template_dir: Path, dbt_version: Optional[str] = '0.21.0'
+        self, ctx, template_dir: Path, dbt_version: Optional[str] = '1.0.1'
     ) -> None:
         self.ctx = ctx
         self.project_name = ctx.obj.palm.image_name
@@ -49,7 +49,7 @@ class DbtContainerizer(PythonContainerizer):
         """
         semver = self.dbt_version.split(".")
         minimum_version = ['0', '19']
-        maximum_version = ['0', '21']
+        maximum_version = ['1', '3']
 
         if semver[0] <= minimum_version[0] and semver[1] < minimum_version[1]:
             return (
