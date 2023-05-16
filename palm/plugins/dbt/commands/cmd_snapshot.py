@@ -4,18 +4,16 @@ from palm.plugins.dbt.dbt_palm_utils import dbt_env_vars
 
 
 @click.command("snapshot")
-@click.option(
-    "--persist", is_flag=True, help="will not drop the test schema at the end"
-)
+@click.option("--clean", is_flag=True, help="Drop the test schema after the run")
 @click.option("--select", multiple=True)
 @click.pass_context
-def cli(ctx, persist: bool, select: Optional[Tuple] = tuple()):
+def cli(ctx, clean: bool, select: Optional[Tuple] = tuple()):
     """Executes the DBT snapshots."""
 
     cmd = "dbt snapshot"
     if select:
         cmd += f" --select " + " ".join(select)
-    if not persist:
+    if clean:
         cmd += " && dbt run-operation drop_branch_schemas"
 
     env_vars = dbt_env_vars(ctx.obj.palm.branch)
