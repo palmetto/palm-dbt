@@ -12,7 +12,7 @@ def cli(
     environment,
     clean: bool,
     select: Optional[Tuple] = tuple(),
-    exclude: Optional[Tuple] = tuple()
+    exclude: Optional[Tuple] = tuple(),
 ):
     """Executes the dbt snapshots."""
     env_vars = dbt_env_vars(environment.palm.branch)
