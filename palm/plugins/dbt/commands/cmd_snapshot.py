@@ -16,7 +16,7 @@ def cli(
 ):
     """Executes the dbt snapshots."""
     env_vars = dbt_env_vars(environment.palm.branch)
-    
+
     cmd = ["dbt snapshot"]
     if select:
         cmd.append("--select")

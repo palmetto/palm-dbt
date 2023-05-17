@@ -12,7 +12,9 @@ import sys
 @click.option("--select", "-s", multiple=True, help="See dbt docs on select flag")
 @click.option("--exclude", "-e", multiple=True, help="See dbt docs on exclude flag")
 @click.option("--defer", "-d", is_flag=True, help="See dbt docs on defer flag")
-@click.option("--no-fail-fast", "-nx", is_flag=True, help="Runs all tests even if one fails")
+@click.option(
+    "--no-fail-fast", "-nx", is_flag=True, help="Runs all tests even if one fails"
+)
 @click.pass_obj
 def cli(
     environment,
@@ -82,8 +84,9 @@ def build_run_command(
         if not targets:
             cmd.extend(["--select", "state:new", "state:modified+"])
         cmd.append("--defer")
-    
+
     return " ".join(cmd)
+
 
 def set_env_vars(environment, defer: bool = False) -> dict:
     plugin_config = environment.plugin_config('dbt')
