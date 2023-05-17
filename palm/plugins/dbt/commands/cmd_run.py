@@ -7,6 +7,7 @@ import sys
 @click.command("run")
 @click.option(
     "--no-fail-fast",
+    "-nx",
     is_flag=True,
     help="Turns off --fail-fast. See dbt docs on fail-fast flag.",
 )
@@ -14,10 +15,11 @@ import sys
 @click.option("--models", "-m", multiple=True, help="See dbt docs on models flag")
 @click.option("--select", "-s", multiple=True, help="See dbt docs on select flag")
 @click.option("--exclude", "-e", multiple=True, help="See dbt docs on exclude flag")
-@click.option("--defer", is_flag=True, help="See dbt docs on defer flag")
-@click.option("--iterative", is_flag=True, help="Iterative stateful dbt run")
+@click.option("--defer", "-d", is_flag=True, help="See dbt docs on defer flag")
+@click.option("--iterative", "-i", is_flag=True, help="Iterative stateful dbt run")
 @click.option(
     "--full-refresh",
+    "-f",
     is_flag=True,
     help="Will perform a full refresh on incremental models",
 )
@@ -36,7 +38,7 @@ def cli(
     exclude: Optional[Tuple] = tuple(),
     vars: Optional[str] = None,
 ):
-    """Runs the DBT repo."""
+    """Runs the dbt repo."""
     stateful = iterative or defer
 
     if defer:
@@ -92,7 +94,7 @@ def cli(
 
     if clean:
         success, msg = environment.run_in_docker(
-            "dbt run-operation drop_branch_schemas && dbt clean", env_vars
+            "dbt run-operation drop_branch_schemas", env_vars
         )
         click.secho(msg, fg="green" if success else "red")
 

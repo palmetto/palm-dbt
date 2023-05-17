@@ -12,13 +12,13 @@ def cli(environment):
     This command is a no-op as the implementation will differ depending on your
     production environment. You should override this command in your own
     project by running `palm override --name prod-artifacts` and then
-    implementing the logic to download your DBT artifacts from production.
+    implementing the logic to download your dbt artifacts from production.
     """
 
     plugin_config = environment.plugin_config("dbt")
     artifact_path = plugin_config.dbt_artifacts_prod
 
-    msg = "No-op command! Please override this command in your own project by running: palm override --name prod-artifacts'"
+    msg = "No-op command! Please override this command in your own project by running: 'palm override --name prod-artifacts'"
 
     env_vars = dbt_env_vars(environment.palm.branch)
     # success, msg = environment.run_in_docker(cmd, env_vars)

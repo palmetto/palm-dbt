@@ -23,7 +23,7 @@ def cli(
     models: Optional[Tuple] = tuple(),
     select: Optional[Tuple] = tuple(),
 ):
-    """Consecutive run-test of the DBT repo. `count` is the number of run/test cycles to execute, defaults to 2"""
+    """Consecutive run-test of the dbt repo. `count` is the number of run/test cycles to execute, defaults to 2"""
 
     def add_models(command: str) -> str:
         if models:
