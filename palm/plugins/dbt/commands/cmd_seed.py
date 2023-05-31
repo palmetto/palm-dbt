@@ -9,7 +9,12 @@ from palm.plugins.dbt.dbt_palm_utils import dbt_env_vars
 )
 @click.option("--select", multiple=True, help="see dbt docs on select flag")
 @click.option("--exclude", multiple=True, help="see dbt docs on exclude flag")
-@click.option("--no-full-refresh", "-nf", is_flag=True, help="Insert seeds instead of recreating the table")
+@click.option(
+    "--no-full-refresh",
+    "-nf",
+    is_flag=True,
+    help="Insert seeds instead of recreating the table",
+)
 @click.pass_context
 def cli(
     ctx,
