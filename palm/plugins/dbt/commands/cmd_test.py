@@ -63,7 +63,7 @@ def cli(
         click.secho(msg, fg="green" if success else "red")
 
 
-def build_run_command(
+def build_test_command(
     defer: bool = False,
     no_fail_fast: bool = False,
     targets: Optional[list] = None,

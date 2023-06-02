@@ -25,7 +25,7 @@ def cli(
         cmd.append('--exclude')
         cmd.extend(exclude)
 
-    success, msg = environment.run_in_docker(cmd, env_vars)
+    success, msg = environment.run_in_docker(" ".join(cmd), env_vars)
     click.secho(msg, fg="green" if success else "red")
 
     if clean:
