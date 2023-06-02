@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2023-06-02
+
+### Added
+
+- `palm seed` command for working with dbt seeds
+
+### Changed
+
+- `dbt seed` runs with `--full-refresh` by default in `palm run` and other places.
+- PR template updated to make contributing easier
+- `palm snapshot` command now persists by default, similar to `palm run`
+
 ## [0.5.0] - 2023-03-16
 
 ### Added
