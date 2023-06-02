@@ -13,13 +13,13 @@ from palm.plugins.dbt.dbt_palm_utils import dbt_env_vars
 )
 @click.option("--models", multiple=True, help="see dbt docs on models flag")
 @click.option("--select", multiple=True, help="see dbt docs on select flag")
-@click.option("--no-seed", is_flag=True, help="will skip seed full refresh")
+@click.option("--seed", is_flag=True, help="will skip seed full refresh")
 @click.pass_context
 def cli(
     ctx,
     count: int,
     persist: bool,
-    no_seed: bool,
+    seed: bool,
     models: Optional[Tuple] = tuple(),
     select: Optional[Tuple] = tuple(),
 ):
@@ -46,7 +46,7 @@ def cli(
 
     def make_cmd():
         commands = []
-        if not no_seed:
+        if seed:
             seed_cmd = "dbt seed --full-refresh"
             commands.append(add_select(seed_cmd))
 
