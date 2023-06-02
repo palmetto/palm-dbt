@@ -21,7 +21,7 @@ import sys
     is_flag=True,
     help="Will perform a full refresh on incremental models",
 )
-@click.option("--no-seed", is_flag=True, help="Will skip seed full refresh")
+@click.option("--seed", is_flag=True, help="Run dbt seed before dbt run")
 @click.pass_obj
 def cli(
     environment,
@@ -30,7 +30,7 @@ def cli(
     full_refresh: bool,
     iterative: bool,
     defer: bool,
-    no_seed: bool,
+    seed: bool,
     models: Optional[Tuple] = tuple(),
     select: Optional[Tuple] = tuple(),
     exclude: Optional[Tuple] = tuple(),
@@ -62,7 +62,7 @@ def cli(
     run_cmd = build_run_command(
         # Is there a better way to pass these args in?
         full_refresh=full_refresh,
-        no_seed=(no_seed or defer),
+        seed=seed,
         no_fail_fast=(no_fail_fast or iterative),
         targets=targets,
         exclude=exclude,
@@ -83,7 +83,7 @@ def cli(
             env_vars = set_env_vars(environment, stateful)
             stateful_run_cmd = build_run_command(
                 targets=["result:error", "result:skipped"],
-                no_seed=iterative,
+                seed=False,
                 no_fail_fast=iterative,
             )
             success, msg = environment.run_in_docker(stateful_run_cmd, env_vars)
@@ -99,7 +99,7 @@ def cli(
 
 def build_run_command(
     full_refresh: bool = False,
-    no_seed: bool = True,
+    seed: bool = True,
     no_fail_fast: bool = False,
     targets: Optional[list] = None,
     exclude: Optional[Tuple] = None,
@@ -109,8 +109,8 @@ def build_run_command(
     cmd = []
     full_refresh_option = " --full-refresh" if full_refresh else ""
 
-    if not no_seed:
-        cmd.append(f"dbt seed{full_refresh_option}")
+    if seed:
+        cmd.append(f"dbt seed --full-refresh")
         cmd.append("&&")
 
     cmd.append(f"dbt run{full_refresh_option}")
