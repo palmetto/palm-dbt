@@ -47,7 +47,7 @@ def cli(
     # --select and --models are interchangeable on dbt >= v1, combine the lists of selections
     targets = list(set(models + select))
 
-    run_cmd = build_run_command(
+    run_cmd = build_test_command(
         no_fail_fast=no_fail_fast,
         targets=targets,
         exclude=exclude,
