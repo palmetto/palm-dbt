@@ -11,7 +11,7 @@ valid_model_types = ['tmp', 'staging', 'intermediate', 'dim', 'fact']
 
 @click.group()
 def cli():
-    """DBT model tools"""
+    """dbt model tools"""
     pass
 
 

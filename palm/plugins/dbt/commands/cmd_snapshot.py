@@ -5,17 +5,31 @@ from palm.plugins.dbt.dbt_palm_utils import dbt_env_vars
 
 @click.command("snapshot")
 @click.option("--clean", is_flag=True, help="Drop the test schema after the run")
-@click.option("--select", multiple=True)
-@click.pass_context
-def cli(ctx, clean: bool, select: Optional[Tuple] = tuple()):
-    """Executes the DBT snapshots."""
+@click.option("--select", "-s", multiple=True, help="See dbt docs on select flag")
+@click.option("--exclude", "-e", multiple=True, help="See dbt docs on exclude flag")
+@click.pass_obj
+def cli(
+    environment,
+    clean: bool,
+    select: Optional[Tuple] = tuple(),
+    exclude: Optional[Tuple] = tuple(),
+):
+    """Executes the dbt snapshots."""
+    env_vars = dbt_env_vars(environment.palm.branch)
 
-    cmd = "dbt snapshot"
+    cmd = ["dbt snapshot"]
     if select:
-        cmd += f" --select " + " ".join(select)
-    if clean:
-        cmd += " && dbt run-operation drop_branch_schemas"
+        cmd.append("--select")
+        cmd.extend(select)
+    if exclude:
+        cmd.append('--exclude')
+        cmd.extend(exclude)
 
-    env_vars = dbt_env_vars(ctx.obj.palm.branch)
-    success, msg = ctx.obj.run_in_docker(cmd, env_vars)
+    success, msg = environment.run_in_docker(" ".join(cmd), env_vars)
     click.secho(msg, fg="green" if success else "red")
+
+    if clean:
+        success, msg = environment.run_in_docker(
+            "dbt run-operation drop_branch_schemas", env_vars
+        )
+        click.secho(msg, fg="green" if success else "red")

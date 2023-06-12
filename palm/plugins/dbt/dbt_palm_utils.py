@@ -2,7 +2,7 @@ import re
 from typing import Dict
 from palm.plugins.dbt.local_user_lookup import local_user_lookup
 
-""" Shared DBT utilities to build out common CLI options """
+""" Shared dbt utilities to build out common CLI options """
 
 
 def dbt_env_vars(branch: str) -> Dict:
