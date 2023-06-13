@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.0] - 2023-06-13
+
+### Added
+
+- `palm test` now supports the `--defer` option, making it easy to run the tests
+for models you have changed in your current branch.
+
+### Changed
+
+- All palm dbt commands have been updated to have a consistent interface with
+`palm run`.
+- Short options are added to many commands to improve usability.
+
+### Fixed
+
+- `dbt seed` command uses the proper decorator to pass the env object.
+
 ## [0.6.0] - 2023-06-02
 
 ### Added
