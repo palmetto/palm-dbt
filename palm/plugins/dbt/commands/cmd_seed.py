@@ -15,7 +15,7 @@ from palm.plugins.dbt.dbt_palm_utils import dbt_env_vars
     is_flag=True,
     help="Insert seeds instead of recreating the table",
 )
-@click.obj
+@click.pass_obj
 def cli(
     environment,
     clean: bool,
