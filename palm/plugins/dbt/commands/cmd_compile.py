@@ -4,15 +4,29 @@ from palm.plugins.dbt.dbt_palm_utils import dbt_env_vars
 
 
 @click.command("compile")
-@click.option("--models", multiple=True, help="see dbt docs on models flag")
-@click.pass_context
-def cli(ctx, models: Optional[Tuple] = tuple()):
-    """Cleans up target directory and dependencies, then compiles dbt"""
+@click.option("--models", "-m", multiple=True, help="See dbt docs on models flag")
+@click.option("--select", "-s", multiple=True, help="See dbt docs on select flag")
+@click.option("--exclude", "-e", multiple=True, help="See dbt docs on exclude flag")
+@click.pass_obj
+def cli(
+    environment,
+    models: Optional[Tuple] = tuple(),
+    select: Optional[Tuple] = tuple(),
+    exclude: Optional[Tuple] = tuple(),
+):
+    """Compiles the dbt repo"""
+    env_vars = dbt_env_vars(environment.palm.branch)
 
-    cmd = "dbt compile"
-    if models:
-        cmd += f" --models {' '.join(models)}"
+    # --select and --models are interchangeable on dbt >= v1, combine the lists of selections
+    targets = list(set(models + select))
 
-    env_vars = dbt_env_vars(ctx.obj.palm.branch)
-    success, msg = ctx.obj.run_in_docker(cmd, env_vars)
+    cmd = ["dbt compile"]
+    if targets:
+        cmd.append("--select")
+        cmd.extend(targets)
+    if exclude:
+        cmd.append('--exclude')
+        cmd.extend(exclude)
+
+    success, msg = environment.run_in_docker(" ".join(cmd), env_vars)
     click.secho(msg, fg="green" if success else "red")
