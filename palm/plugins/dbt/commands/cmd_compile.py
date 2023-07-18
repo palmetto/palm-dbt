@@ -6,12 +6,14 @@ from palm.plugins.dbt.dbt_palm_utils import dbt_env_vars
 @click.command("compile")
 @click.option("--models", "-m", multiple=True, help="See dbt docs on models flag")
 @click.option("--select", "-s", multiple=True, help="See dbt docs on select flag")
+@click.option("--selector", multiple=True, help="See dbt docs on selector flag")
 @click.option("--exclude", "-e", multiple=True, help="See dbt docs on exclude flag")
 @click.pass_obj
 def cli(
     environment,
     models: Optional[Tuple] = tuple(),
     select: Optional[Tuple] = tuple(),
+    selector: Optional[Tuple] = tuple(),
     exclude: Optional[Tuple] = tuple(),
 ):
     """Compiles the dbt repo"""
@@ -24,6 +26,9 @@ def cli(
     if targets:
         cmd.append("--select")
         cmd.extend(targets)
+    if selector:
+        cmd.append("--selector")
+        cmd.extend(selector)
     if exclude:
         cmd.append('--exclude')
         cmd.extend(exclude)
