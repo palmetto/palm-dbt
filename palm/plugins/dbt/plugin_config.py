@@ -16,12 +16,16 @@ class dbtPluginConfigModel(BaseModel):
     def dbt_version_semver(self) -> str:
         return semver.Version.parse(self.dbt_version)
 
-    def is_dbt_version_greater_than(self, version: str) -> bool:
+    def is_dbt_version_greater_than(self, version: str, or_equal: bool = True) -> bool:
         target_version = semver.Version.parse(version)
+        if or_equal:
+            return self.dbt_version_semver() >= target_version
         return self.dbt_version_semver() > target_version
 
-    def is_dbt_version_less_than(self, version: str) -> bool:
+    def is_dbt_version_less_than(self, version: str, or_equal: bool = True) -> bool:
         target_version = semver.Version.parse(version)
+        if or_equal:
+            return self.dbt_version_semver() <= target_version
         return self.dbt_version_semver() < target_version
 
 
