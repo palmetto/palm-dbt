@@ -2,13 +2,27 @@ import click
 
 from typing import Optional
 from pathlib import Path
+import semver
 from pydantic import BaseModel
 from palm.plugins.base_plugin_config import BasePluginConfig
+from palm.plugins.dbt.dbt_version_detection import get_dbt_version
 
 
 class dbtPluginConfigModel(BaseModel):
     dbt_artifacts_prod: Optional[str]
     dbt_artifacts_local: str
+    dbt_version: str
+
+    def dbt_version_semver(self) -> str:
+        return semver.Version.parse(self.dbt_version)
+
+    def is_dbt_version_greater_than(self, version: str) -> bool:
+        target_version = semver.Version.parse(version)
+        return self.dbt_version_semver() > target_version
+
+    def is_dbt_version_less_than(self, version: str) -> bool:
+        target_version = semver.Version.parse(version)
+        return self.dbt_version_semver() < target_version
 
 
 class DbtPluginConfig(BasePluginConfig):
@@ -34,5 +48,7 @@ class DbtPluginConfig(BasePluginConfig):
             default=Path("target/"),
         )
         config['dbt_artifacts_local'] = str(local)
+
+        config['dbt_version'] = get_dbt_version()
 
         return config
