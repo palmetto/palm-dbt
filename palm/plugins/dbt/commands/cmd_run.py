@@ -14,6 +14,7 @@ import sys
 @click.option("--clean", is_flag=True, help="Drop the test schema after the run")
 @click.option("--models", "-m", multiple=True, help="See dbt docs on models flag")
 @click.option("--select", "-s", multiple=True, help="See dbt docs on select flag")
+@click.option("--selector", multiple=True, help="See dbt docs on selector flag")
 @click.option("--exclude", "-e", multiple=True, help="See dbt docs on exclude flag")
 @click.option("--defer", "-d", is_flag=True, help="See dbt docs on defer flag")
 @click.option("--iterative", "-i", is_flag=True, help="Iterative stateful dbt run")
@@ -35,6 +36,7 @@ def cli(
     seed: bool,
     models: Optional[Tuple] = tuple(),
     select: Optional[Tuple] = tuple(),
+    selector: Optional[Tuple] = tuple(),
     exclude: Optional[Tuple] = tuple(),
     vars: Optional[str] = None,
 ):
@@ -67,6 +69,7 @@ def cli(
         seed=seed,
         no_fail_fast=(no_fail_fast or iterative),
         targets=targets,
+        selector=selector,
         exclude=exclude,
         defer=defer,
         vars=vars,
@@ -104,6 +107,7 @@ def build_run_command(
     seed: bool = True,
     no_fail_fast: bool = False,
     targets: Optional[list] = None,
+    selector: Optional[Tuple] = None,
     exclude: Optional[Tuple] = None,
     defer: bool = False,
     vars: Optional[str] = None,
@@ -119,6 +123,9 @@ def build_run_command(
     if targets:
         cmd.append("--select")
         cmd.extend(targets)
+    if selector:
+        cmd.append("--selector")
+        cmd.extend(selector)
     if exclude:
         cmd.append("--exclude")
         cmd.extend(exclude)
