@@ -2,16 +2,17 @@ import click
 
 from typing import Optional
 from pathlib import Path
+import yaml
 import semver
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from palm.plugins.base_plugin_config import BasePluginConfig
-from palm.plugins.dbt.dbt_version_detection import get_dbt_version
+from palm.plugins.dbt.dbt_version_detection import dbt_version_factory, get_dbt_version
 
 
 class dbtPluginConfigModel(BaseModel):
     dbt_artifacts_prod: Optional[str]
     dbt_artifacts_local: str
-    dbt_version: str
+    dbt_version: str = Field(default_factory=dbt_version_factory)
 
     def dbt_version_semver(self) -> str:
         return semver.Version.parse(self.dbt_version)
@@ -41,7 +42,9 @@ class DbtPluginConfig(BasePluginConfig):
         )
         if has_prod_artifacts:
             prod = click.prompt(
-                "Prod artifacts location:", type=click.Path(exists=True)
+                "Prod artifacts location:"
+                , type=click.Path(exists=True)
+                , default=Path("target/prod_artifacts")
             )
             config["dbt_artifacts_prod"] = str(prod)
             click.secho(f"Saved prod artifacts location:  {prod}", fg="green")
