@@ -42,9 +42,9 @@ class DbtPluginConfig(BasePluginConfig):
         )
         if has_prod_artifacts:
             prod = click.prompt(
-                "Prod artifacts location:"
-                , type=click.Path(exists=True)
-                , default=Path("target/prod_artifacts")
+                "Prod artifacts location:",
+                type=click.Path(exists=True),
+                default=Path("target/prod_artifacts"),
             )
             config["dbt_artifacts_prod"] = str(prod)
             click.secho(f"Saved prod artifacts location:  {prod}", fg="green")
