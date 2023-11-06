@@ -24,6 +24,7 @@ import sys
     help="Will perform a full refresh on incremental models",
 )
 @click.option("--seed", is_flag=True, help="Run dbt seed before dbt run")
+@click.option("--lightdash", '-ld', is_flag=True, help="Run dbt with lightdash enabled")
 @click.pass_obj
 def cli(
     environment,
@@ -33,6 +34,7 @@ def cli(
     iterative: bool,
     defer: bool,
     seed: bool,
+    lightdash: bool,
     models: Optional[Tuple] = tuple(),
     select: Optional[Tuple] = tuple(),
     exclude: Optional[Tuple] = tuple(),
@@ -70,6 +72,7 @@ def cli(
         exclude=exclude,
         defer=defer,
         vars=vars,
+        lightdash=lightdash,
     )
 
     success, msg = environment.run_in_docker(run_cmd, env_vars)
@@ -107,6 +110,7 @@ def build_run_command(
     exclude: Optional[Tuple] = None,
     defer: bool = False,
     vars: Optional[str] = None,
+    lightdash: bool = False,
 ) -> str:
     cmd = []
     full_refresh_option = " --full-refresh" if full_refresh else ""
@@ -115,7 +119,11 @@ def build_run_command(
         cmd.append(f"dbt seed --full-refresh")
         cmd.append("&&")
 
-    cmd.append(f"dbt run{full_refresh_option}")
+    if lightdash:
+        cmd.append(f"lightdash dbt run{full_refresh_option}")
+    else:
+        cmd.append(f"dbt run{full_refresh_option}")
+
     if targets:
         cmd.append("--select")
         cmd.extend(targets)
@@ -139,7 +147,7 @@ def set_env_vars(environment, stateful: bool, defer: bool = False) -> dict:
     env_vars = dbt_env_vars(environment.palm.branch)
 
     # These env vars are renamed in dbt v1.5.0, old env vars are deprecated
-    if plugin_config.is_dbt_version_greater_than("1.5.0"):
+    if plugin_config.is_dbt_version_greater_than("1.5.0", or_equal=True):
         defer_env_var = "DBT_DEFER"
         state_env_var = "DBT_STATE"
     else:

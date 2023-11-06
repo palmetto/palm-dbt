@@ -93,7 +93,7 @@ def set_env_vars(environment, defer: bool = False) -> dict:
     env_vars = dbt_env_vars(environment.palm.branch)
 
     # These env vars are renamed in dbt v1.5.0, old env vars are deprecated
-    if plugin_config.is_dbt_version_greater_than("1.5.0"):
+    if plugin_config.is_dbt_version_greater_than("1.5.0", or_equal=True):
         defer_env_var = "DBT_DEFER"
         state_env_var = "DBT_STATE"
     else:
