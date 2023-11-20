@@ -10,6 +10,7 @@ import sys
 )
 @click.option("--models", "-m", multiple=True, help="See dbt docs on models flag")
 @click.option("--select", "-s", multiple=True, help="See dbt docs on select flag")
+@click.option("--selector", multiple=True, help="See dbt docs on selector flag")
 @click.option("--exclude", "-e", multiple=True, help="See dbt docs on exclude flag")
 @click.option("--defer", "-d", is_flag=True, help="See dbt docs on defer flag")
 @click.option(
@@ -23,6 +24,7 @@ def cli(
     defer: bool,
     models: Optional[Tuple] = tuple(),
     select: Optional[Tuple] = tuple(),
+    selector: Optional[Tuple] = tuple(),
     exclude: Optional[Tuple] = tuple(),
 ):
     """Tests the dbt repo"""
@@ -50,6 +52,7 @@ def cli(
     run_cmd = build_test_command(
         no_fail_fast=no_fail_fast,
         targets=targets,
+        selector=selector,
         exclude=exclude,
         defer=defer,
     )
@@ -67,6 +70,7 @@ def build_test_command(
     defer: bool = False,
     no_fail_fast: bool = False,
     targets: Optional[list] = None,
+    selector: Optional[Tuple] = None,
     exclude: Optional[Tuple] = None,
 ) -> str:
     cmd = []
@@ -75,6 +79,9 @@ def build_test_command(
     if targets:
         cmd.append('--select')
         cmd.extend(targets)
+    if selector:
+        cmd.append('--selector')
+        cmd.extend(selector)
     if exclude:
         cmd.append('--exclude')
         cmd.extend(exclude)
@@ -91,9 +98,18 @@ def build_test_command(
 def set_env_vars(environment, defer: bool = False) -> dict:
     plugin_config = environment.plugin_config('dbt')
     env_vars = dbt_env_vars(environment.palm.branch)
-    if defer:
-        env_vars['DBT_DEFER_TO_STATE'] = 'true'
-        env_vars['DBT_ARTIFACT_STATE_PATH'] = plugin_config.dbt_artifacts_prod
+
+    # These env vars are renamed in dbt v1.5.0, old env vars are deprecated
+    if plugin_config.is_dbt_version_greater_than("1.5.0", or_equal=True):
+        defer_env_var = "DBT_DEFER"
+        state_env_var = "DBT_STATE"
     else:
-        env_vars['DBT_ARTIFACT_STATE_PATH'] = plugin_config.dbt_artifacts_local
+        defer_env_var = "DBT_DEFER_TO_STATE"
+        state_env_var = "DBT_ARTIFACT_STATE_PATH"
+
+    if defer:
+        env_vars[defer_env_var] = 'true'
+        env_vars[state_env_var] = plugin_config.dbt_artifacts_prod
+    else:
+        env_vars[state_env_var] = plugin_config.dbt_artifacts_local
     return env_vars

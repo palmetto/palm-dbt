@@ -8,6 +8,7 @@ from palm.plugins.dbt.dbt_palm_utils import dbt_env_vars
     "--clean", is_flag=True, help="drop the test schema after the run is complete"
 )
 @click.option("--select", '-s', multiple=True, help="see dbt docs on select flag")
+@click.option("--selector", multiple=True, help="see dbt docs on selector flag")
 @click.option("--exclude", '-e', multiple=True, help="see dbt docs on exclude flag")
 @click.option(
     "--no-full-refresh",
@@ -21,6 +22,7 @@ def cli(
     clean: bool,
     no_full_refresh: bool,
     select: Optional[Tuple] = tuple(),
+    selector: Optional[Tuple] = tuple(),
     exclude: Optional[Tuple] = tuple(),
 ):
     """Run dbt seeds"""
@@ -29,6 +31,9 @@ def cli(
     if select:
         cmd.append('--select')
         cmd.extend(select)
+    if selector:
+        cmd.append('--selector')
+        cmd.extend(selector)
     if exclude:
         cmd.append('--exclude')
         cmd.extend(exclude)

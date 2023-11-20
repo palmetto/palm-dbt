@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0] - 2023-11-20
+
+### Added
+
+- dbt version detection: palm can now detect the version of dbt used in a project
+  and will add the version to the plugin config. This can then be used to support
+  changes between dbt versions.
+- support for dbt's yaml selectors via the `--selector` option on relevant commands.
+
+### Changed
+
+- Requires palm v2.6.0 or higher
+- env vars are updated for projects running dbt v1.5.0 and later. This resolves
+  deprecation warnings for people using more recent versions of dbt.
+
 ## [0.7.0] - 2023-06-13
 
 ### Added
