@@ -98,9 +98,18 @@ def build_test_command(
 def set_env_vars(environment, defer: bool = False) -> dict:
     plugin_config = environment.plugin_config('dbt')
     env_vars = dbt_env_vars(environment.palm.branch)
-    if defer:
-        env_vars['DBT_DEFER_TO_STATE'] = 'true'
-        env_vars['DBT_ARTIFACT_STATE_PATH'] = plugin_config.dbt_artifacts_prod
+
+    # These env vars are renamed in dbt v1.5.0, old env vars are deprecated
+    if plugin_config.is_dbt_version_greater_than("1.5.0", or_equal=True):
+        defer_env_var = "DBT_DEFER"
+        state_env_var = "DBT_STATE"
     else:
-        env_vars['DBT_ARTIFACT_STATE_PATH'] = plugin_config.dbt_artifacts_local
+        defer_env_var = "DBT_DEFER_TO_STATE"
+        state_env_var = "DBT_ARTIFACT_STATE_PATH"
+
+    if defer:
+        env_vars[defer_env_var] = 'true'
+        env_vars[state_env_var] = plugin_config.dbt_artifacts_prod
+    else:
+        env_vars[state_env_var] = plugin_config.dbt_artifacts_local
     return env_vars
